@@ -4,6 +4,7 @@ import { useDocumentTitle } from '../hooks/useMedia'
 import { Headline, Reveal } from '../components/Reveal'
 import QuoteForm from '../components/QuoteForm'
 import Avatar from '../components/Avatar'
+import Logo3D from '../components/Logo3D'
 import { team } from '../config/site'
 
 const digits = (s) => s.replace(/[^\d+]/g, '')
@@ -49,6 +50,7 @@ export default function Contact() {
                 <Row label="Hours" value={site.hours} />
                 <Row label="Service area" value={site.serviceArea} />
               </div>
+              <Logo3D className="mt-8 h-[240px] !max-w-[420px] !mx-0" />
             </div>
           </Reveal>
         </div>

@@ -13,6 +13,7 @@ export default function Nav() {
   const [open, setOpen] = useState(false)
   const [solid, setSolid] = useState(false)
   const [hidden, setHidden] = useState(false)
+  const [shown, setShown] = useState(false)
   const menu = useRef(null)
   const toggle = useRef(null)
   const reduced = useReducedMotion()
@@ -35,7 +36,11 @@ export default function Nav() {
     const lenis = getLenis()
     document.body.style.overflow = open ? 'hidden' : ''
     open ? lenis?.stop() : lenis?.start()
+    if (open) setShown(true)
     if (!menu.current) return
+    if (!open && menu.current && !menu.current.hidden && !reduced) {
+      gsap.to(menu.current, { clipPath: 'inset(0 0 100% 0)', duration: 0.6, ease: 'expo.inOut', onComplete: () => setShown(false) })
+    } else if (!open) setShown(false)
     if (open && !reduced) {
       gsap.fromTo(menu.current, { clipPath: 'inset(0 0 100% 0)' }, { clipPath: 'inset(0 0 0% 0)', duration: 0.8, ease: 'expo.out' })
       gsap.fromTo('[data-mi]', { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, ease: 'expo.out', stagger: 0.07, delay: 0.15 })
@@ -83,7 +88,7 @@ export default function Nav() {
       <div
         id="mobile-menu"
         ref={menu}
-        hidden={!open}
+        hidden={!shown}
         className="fixed inset-0 z-[45] flex flex-col justify-between overflow-y-auto bg-midnight px-6 pb-10 pt-28 lg:hidden"
         style={{ background: 'radial-gradient(90% 50% at 85% 0%, rgba(0,122,255,.22) 0%, #000000 70%)' }}
       >

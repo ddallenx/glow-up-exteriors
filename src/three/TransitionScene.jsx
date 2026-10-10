@@ -1,7 +1,8 @@
-import { useLayoutEffect, useMemo, useRef } from 'react'
+import { Suspense, useLayoutEffect, useMemo, useRef } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import Studio from './Studio'
+import { LogoSlab } from './LogoSlab'
 import { tx } from '../lib/tx'
 
 const rnd = (seed) => () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646 }
@@ -251,6 +252,21 @@ function Dust({ count = 160 }) {
   )
 }
 
+/** The 3D logo emerges at the heart of the transition, always in front of the lens. */
+function LogoCenter() {
+  const g = useRef()
+  const { camera } = useThree()
+  useFrame(() => {
+    const p = tx.p
+    const s = smooth(0.3, 0.5, p) * (1 - smooth(0.64, 0.84, p))
+    g.current.visible = s > 0.01
+    g.current.position.set(camera.position.x, camera.position.y + 0.4, camera.position.z - 12)
+    g.current.scale.setScalar(0.3 + 0.7 * s)
+    g.current.rotation.set(0.08, (p - 0.5) * 3.6, 0)
+  })
+  return <group ref={g}><Suspense fallback={null}><LogoSlab width={15} layers={20} depth={1.6} overlay /></Suspense></group>
+}
+
 function Rig({ kind }) {
   const { camera } = useThree()
   const group = useRef()
@@ -296,6 +312,7 @@ export default function TransitionScene({ active, kind, mobile }) {
       <pointLight position={[0, 0, 4]} intensity={30} color="#4da3ff" distance={30} />
       <Studio res={64} />
       <Rig kind={kind} />
+      <LogoCenter />
       <mesh renderOrder={999} frustumCulled={false} material={veilMat}><planeGeometry args={[2, 2]} /></mesh>
     </Canvas>
   )

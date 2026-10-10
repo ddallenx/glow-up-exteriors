@@ -200,7 +200,11 @@ export default function WashReveal() {
     <div>
       <div role="tablist" aria-label="Choose a surface" className="mb-5 flex flex-wrap gap-2">
         {Object.entries(SURFACES).map(([k, s]) => (
-          <button key={k} role="tab" aria-selected={kind === k} onClick={() => { state.current.touched = false; setKind(k) }}
+          <button key={k} role="tab" aria-selected={kind === k} onClick={() => {
+              if (k === kind) return
+              state.current.touched = false; setKind(k)
+              if (!reduced) gsap.fromTo(wrap.current, { opacity: 0.2, filter: 'blur(14px)', scale: 0.96, rotateX: 6 }, { opacity: 1, filter: 'blur(0px)', scale: 1, rotateX: 0, transformPerspective: 1200, duration: 0.9, ease: 'expo.out', clearProps: 'filter,transform' })
+            }}
             className={`min-h-[44px] rounded-full border px-5 text-sm font-bold transition-colors ${kind === k ? 'border-royal bg-royal text-white' : 'border-silver/25 text-silver hover:border-silver/60 hover:text-white'}`}>
             {s.label}
           </button>

@@ -44,14 +44,14 @@ export default function LivePhoto({ item, seed = 5, label }) {
 
   if (mode === 'slider') {
     return (
-      <div>
+      <div key="slider" className="mode-in">
         <BeforeAfter before={beforeEl} after={afterEl} />
         <Toggle mode={mode} setMode={setMode} />
       </div>
     )
   }
   return (
-    <div>
+    <div key="live" className="mode-in">
       <div
         ref={box}
         className="relative aspect-[8/5] w-full select-none overflow-hidden rounded-[28px] border border-silver/20 shadow-[0_40px_80px_-30px_rgba(0,0,0,0.7)] [-webkit-touch-callout:none] [touch-action:pan-y]"

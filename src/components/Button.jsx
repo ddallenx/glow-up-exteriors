@@ -1,6 +1,7 @@
 import { useRef } from 'react'
 import { gsap } from '../lib/gsap'
 import { TLink } from './Transition'
+import { getLenis } from '../lib/scroll'
 import { useFinePointer, useReducedMotion } from '../hooks/useMedia'
 
 const variants = {
@@ -36,6 +37,17 @@ export default function Button({ to, href, variant = 'primary', children, classN
   )
   const shared = { ref, className: cls, onMouseMove: move, onMouseLeave: leave }
   if (to) return <TLink to={to} {...shared} {...props}>{inner}</TLink>
+  if (href && href.startsWith('#')) {
+    const jump = (e) => {
+      const el = document.querySelector(href)
+      if (!el) return
+      e.preventDefault()
+      const l = getLenis()
+      l ? l.scrollTo(el, { offset: -90, duration: 1.7 }) : el.scrollIntoView({ behavior: 'smooth' })
+      if (!reduced) gsap.fromTo(el, { boxShadow: 'inset 0 0 0 0 rgba(0,122,255,0)' }, { boxShadow: 'inset 0 0 120px 0 rgba(0,122,255,.28)', duration: 0.9, yoyo: true, repeat: 1, delay: 0.9, clearProps: 'boxShadow' })
+    }
+    return <a href={href} {...shared} onClick={jump} {...props}>{inner}</a>
+  }
   if (href) return <a href={href} {...shared} {...props}>{inner}</a>
   return <button type="button" {...shared} {...props}>{inner}</button>
 }

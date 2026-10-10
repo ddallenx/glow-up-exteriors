@@ -1,7 +1,7 @@
 import { createContext, lazy, Suspense, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { gsap, ScrollTrigger } from '../lib/gsap'
-import { pageState, scrollToTop } from '../lib/scroll'
+import { getLenis, pageState, scrollToTop } from '../lib/scroll'
 import { useReducedMotion } from '../hooks/useMedia'
 import { useTier } from '../hooks/useTier'
 import { KIND, LABEL, tx } from '../lib/tx'
@@ -56,7 +56,7 @@ export function TransitionProvider({ children }) {
   useEffect(() => {
     if (!use3d) return
     const idle = window.requestIdleCallback || ((f) => setTimeout(f, 1500))
-    const id = idle(() => { loadTx().then(() => setMount3d(true)) }, { timeout: 4000 })
+    const id = idle(() => { loadTx().then(() => setMount3d(true)) }, { timeout: 1800 })
     return () => window.cancelIdleCallback?.(id)
   }, [use3d])
 
@@ -92,12 +92,16 @@ export function TransitionProvider({ children }) {
       if (busy.current) return
       const [target] = to.split('#')
       if (target === path.current) {
-        scrollToTop()
+        const l = getLenis()
+        l ? l.scrollTo(0, { duration: 1.4 }) : window.scrollTo({ top: 0, behavior: 'smooth' })
         return
       }
       if (reduced) {
-        navigate(to)
-        scrollToTop()
+        // Accessible: a short cross-fade, no motion.
+        gsap.to('#main', { opacity: 0, duration: 0.18, onComplete: () => {
+          navigate(to); scrollToTop()
+          requestAnimationFrame(() => gsap.fromTo('#main', { opacity: 0 }, { opacity: 1, duration: 0.25, clearProps: 'opacity' }))
+        } })
         return
       }
       if (use3d && mount3d) { go3d(to, target); return }
@@ -132,8 +136,7 @@ export function TransitionProvider({ children }) {
       )}
       <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-[101] flex items-center justify-center">
         <div data-tx-label className="flex translate-y-4 scale-90 flex-col items-center gap-2 opacity-0 drop-shadow-[0_0_40px_rgba(0,122,255,.8)]">
-          <LogoMark className="h-24 md:h-32" />
-          <span ref={label3d} className="serif-accent text-[clamp(2rem,6vw,4rem)] text-white" />
+          <span ref={label3d} className="serif-accent mt-[34vh] text-[clamp(2rem,6vw,4rem)] text-white" />
         </div>
       </div>
       <div ref={root} aria-hidden="true" className="pointer-events-none fixed inset-0 z-[100]" style={{ display: 'none' }}>

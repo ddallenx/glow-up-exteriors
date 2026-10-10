@@ -111,3 +111,10 @@ details > summary::-webkit-details-marker { display: none; }
 /* Let the per-page 3D backdrop show through dark sections; light sections stay solid. */
 main section.bg-midnight { background-color: transparent; }
 main section.bg-navy { background-color: transparent; }
+
+/* Small in-page transitions */
+@keyframes modeIn { from { opacity: 0; transform: translateY(14px) scale(.985); filter: blur(8px); } to { opacity: 1; transform: none; filter: none; } }
+.mode-in { animation: modeIn .7s var(--ease-expo) both; }
+@keyframes faqIn { from { opacity: 0; transform: translateY(-10px); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
+details[open] > p { animation: faqIn .55s var(--ease-expo) both; }
+@media (prefers-reduced-motion: reduce) { .mode-in, details[open] > p { animation: none !important; } }

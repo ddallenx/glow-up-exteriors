@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import { TransitionProvider } from './components/Transition'
 import Layout from './components/Layout'
@@ -11,7 +11,14 @@ const About = lazy(() => import('./pages/About'))
 const Contact = lazy(() => import('./pages/Contact'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 
+const prefetch = () => [import('./pages/WindowWashing'), import('./pages/PressureWashing'), import('./pages/Commercial'), import('./pages/About'), import('./pages/Contact')]
+
 export default function App() {
+  useEffect(() => {
+    const idle = window.requestIdleCallback || ((f) => setTimeout(f, 1200))
+    const id = idle(prefetch, { timeout: 2500 })
+    return () => window.cancelIdleCallback?.(id)
+  }, [])
   return (
     <TransitionProvider>
       <Suspense fallback={<div className="min-h-screen bg-midnight" />}>
