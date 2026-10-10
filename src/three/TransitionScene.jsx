@@ -217,17 +217,39 @@ function Streaks({ count }) {
 
 const veilMat = new THREE.ShaderMaterial({
   transparent: true, depthTest: false, depthWrite: false,
-  uniforms: { uA: { value: 0 }, uFlash: { value: 0 } },
+  uniforms: { uA: { value: 0 }, uFlash: { value: 0 }, uP: { value: 0 } },
   vertexShader: 'varying vec2 vUv; void main(){ vUv=uv; gl_Position=vec4(position.xy,0.,1.); }',
-  fragmentShader: `varying vec2 vUv; uniform float uA; uniform float uFlash;
+  fragmentShader: `varying vec2 vUv; uniform float uA; uniform float uFlash; uniform float uP;
     void main(){
-      vec2 c = vUv - .5; float d = length(c);
-      vec3 deep = vec3(.02,.05,.14); vec3 mid = vec3(.0,.28,.75); vec3 hot = vec3(.45,.78,1.);
-      vec3 col = mix(mid, deep, smoothstep(.0,.75,d));
-      col += hot * uFlash * smoothstep(.55,.0,d);
+      vec2 c = vUv - .5; c.x *= 1.6; float d = length(c);
+      vec3 mid = vec3(.0,.16,.5); vec3 hot = vec3(.5,.82,1.);
+      vec3 col = mix(mid, vec3(0.), smoothstep(.0,.62,d));
+      float ring = exp(-pow((d - uFlash * .7) * 8., 2.)) * uFlash;
+      col += hot * ring * 1.3 + hot * uFlash * smoothstep(.4,.0,d) * .9;
+      float ang = atan(c.y, c.x);
+      col += vec3(.1,.45,1.) * pow(max(0., sin(ang * 22. + uP * 12.)), 18.) * uFlash * smoothstep(.9,.1,d) * .5;
+      col *= 1. - smoothstep(.5,.95,d) * .6;
       gl_FragColor = vec4(col, uA);
     }`,
 })
+
+/** Slow cosmic dust drifting past the lens for parallax in every transition. */
+function Dust({ count = 160 }) {
+  const ref = useRef()
+  const d = useMemo(() => { const r = rnd(41); return Array.from({ length: count }, () => ({ x: (r() - 0.5) * 30, y: (r() - 0.5) * 17, z: r() * 60, s: 0.02 + r() * 0.05 })) }, [count])
+  const o = useMemo(() => new THREE.Object3D(), [])
+  useFrame(() => {
+    const t = tx.p * 48
+    d.forEach((q, i) => { o.position.set(q.x, q.y, ((q.z + t) % 60) - 48); o.scale.setScalar(q.s); o.updateMatrix(); ref.current.setMatrixAt(i, o.matrix) })
+    ref.current.instanceMatrix.needsUpdate = true
+  })
+  return (
+    <instancedMesh ref={ref} args={[null, null, count]} frustumCulled={false}>
+      <sphereGeometry args={[1, 6, 6]} />
+      <meshBasicMaterial color="#9fd0ff" transparent opacity={0.75} blending={THREE.AdditiveBlending} depthWrite={false} toneMapped={false} />
+    </instancedMesh>
+  )
+}
 
 function Rig({ kind }) {
   const { camera } = useThree()
@@ -240,7 +262,10 @@ function Rig({ kind }) {
     const e = p
     const fly = kind === 'frames' || kind === 'cards' || kind === 'rings'
     camera.position.set(fly ? Math.sin(p * 5) * 0.4 : 0, fly ? Math.cos(p * 4) * 0.25 : 0, fly ? THREE.MathUtils.lerp(12, -44, e) : 12)
-    camera.rotation.z = fly ? Math.sin(p * 3.1) * 0.06 : 0
+    camera.rotation.z = Math.sin(p * 3.1) * (fly ? 0.06 : 0.035)
+    const fov = 60 + Math.sin(Math.min(1, p) * Math.PI) * 30
+    if (Math.abs(camera.fov - fov) > 0.05) { camera.fov = fov; camera.updateProjectionMatrix() }
+    veilMat.uniforms.uP.value = p
     veilMat.uniforms.uA.value = smooth(0.26, 0.47, p) * (1 - smooth(0.56, 0.8, p))
     veilMat.uniforms.uFlash.value = Math.exp(-Math.pow((p - 0.5) * 7, 2)) * 0.9
   })
@@ -252,6 +277,7 @@ function Rig({ kind }) {
         : kind === 'rings' ? <Rings count={26} />
         : <Frames kind={kind} count={kind === 'cards' ? 16 : 22} />}
       {(kind === 'frames' || kind === 'cards' || kind === 'rings') && <Streaks count={140} />}
+      <Dust />
     </group>
   )
 }

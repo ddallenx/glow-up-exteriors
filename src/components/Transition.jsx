@@ -69,20 +69,20 @@ export function TransitionProvider({ children }) {
     if (label3d.current) label3d.current.textContent = LABEL[target] || ''
     requestAnimationFrame(() => {
       gsap.timeline({ onComplete: () => { setActive(false); tx.p = 0; busy.current = false; pageState.delay = 0.1; gsap.set('#main', { clearProps: 'all' }) } })
-        .to('#main', { scale: 0.9, opacity: 0.25, filter: 'blur(8px)', transformOrigin: '50% 30%', duration: 0.95, ease: 'power2.in' }, 0)
-        .to(tx, { p: 0.5, duration: 0.95, ease: 'power2.in' }, 0)
-        .to('[data-tx-label]', { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, 0.5)
+        .to('#main', { scale: 0.84, opacity: 0.15, rotateX: 8, z: -280, filter: 'blur(10px) brightness(0.7)', transformPerspective: 1400, transformOrigin: '50% 40%', duration: 1.1, ease: 'power3.in' }, 0)
+        .to(tx, { p: 0.5, duration: 1.1, ease: 'power3.in' }, 0)
+        .to('[data-tx-label]', { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: 'power3.out' }, 0.55)
         .add(() => {
           pageState.delay = 0.55
           navigate(to)
           scrollToTop()
           requestAnimationFrame(() => {
-            gsap.set('#main', { scale: 1.12, opacity: 0, filter: 'blur(10px)', transformOrigin: '50% 30%' })
-            gsap.to('#main', { scale: 1, opacity: 1, filter: 'blur(0px)', duration: 1.3, ease: 'expo.out', delay: 0.2 })
+            gsap.set('#main', { scale: 1.16, opacity: 0, rotateX: -7, z: 260, filter: 'blur(14px) brightness(1.5)', transformPerspective: 1400, transformOrigin: '50% 40%' })
+            gsap.to('#main', { scale: 1, opacity: 1, rotateX: 0, z: 0, filter: 'blur(0px) brightness(1)', duration: 1.7, ease: 'expo.out', delay: 0.25 })
             ScrollTrigger.refresh()
           })
         })
-        .to(tx, { p: 1, duration: 1.2, ease: 'power2.out' }, '+=0.12')
+        .to(tx, { p: 1, duration: 1.45, ease: 'power3.out' }, '+=0.18')
         .to('[data-tx-label]', { opacity: 0, y: -14, duration: 0.35, ease: 'power2.in' }, '-=0.85')
     })
   }, [navigate])
@@ -131,8 +131,8 @@ export function TransitionProvider({ children }) {
         </Suspense>
       )}
       <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-[101] flex items-center justify-center">
-        <div data-tx-label className="flex translate-y-4 flex-col items-center gap-3 opacity-0">
-          <LogoMark className="h-12 w-12" />
+        <div data-tx-label className="flex translate-y-4 scale-90 flex-col items-center gap-2 opacity-0 drop-shadow-[0_0_40px_rgba(0,122,255,.8)]">
+          <LogoMark className="h-24 md:h-32" />
           <span ref={label3d} className="serif-accent text-[clamp(2rem,6vw,4rem)] text-white" />
         </div>
       </div>
@@ -143,13 +143,12 @@ export function TransitionProvider({ children }) {
               key={i}
               data-panel
               className="h-full flex-1"
-              style={{ background: i % 2 ? 'linear-gradient(180deg,#0a1a42,#08163a)' : 'linear-gradient(180deg,#0d2250,#091a42)', marginRight: -1 }}
+              style={{ background: i % 2 ? 'linear-gradient(180deg,#05070d,#000000)' : 'linear-gradient(180deg,#0a0e1a,#000000)', marginRight: -1 }}
             />
           ))}
         </div>
         <div data-curtain-logo className="absolute inset-0 flex flex-col items-center justify-center gap-4 opacity-0">
-          <LogoMark className="h-14 w-14" />
-          <span className="serif-accent text-3xl text-white">Glow Up Exteriors</span>
+          <LogoMark className="h-28 md:h-36" />
         </div>
       </div>
     </Ctx.Provider>

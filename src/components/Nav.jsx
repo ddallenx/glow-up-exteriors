@@ -85,7 +85,7 @@ export default function Nav() {
         ref={menu}
         hidden={!open}
         className="fixed inset-0 z-[45] flex flex-col justify-between overflow-y-auto bg-midnight px-6 pb-10 pt-28 lg:hidden"
-        style={{ background: 'radial-gradient(120% 80% at 80% 0%, #0a4fc4 0%, #050d24 60%)' }}
+        style={{ background: 'radial-gradient(90% 50% at 85% 0%, rgba(0,122,255,.22) 0%, #000000 70%)' }}
       >
         <nav aria-label="Mobile">
           <ul className="space-y-1">

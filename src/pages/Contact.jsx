@@ -3,6 +3,8 @@ import { site } from '../config/site'
 import { useDocumentTitle } from '../hooks/useMedia'
 import { Headline, Reveal } from '../components/Reveal'
 import QuoteForm from '../components/QuoteForm'
+import Avatar from '../components/Avatar'
+import { team } from '../config/site'
 
 const digits = (s) => s.replace(/[^\d+]/g, '')
 
@@ -26,7 +28,6 @@ export default function Contact() {
   useDocumentTitle('Free Quote')
   return (
     <section className="relative isolate overflow-hidden bg-midnight pb-28 pt-36 md:pb-40 md:pt-44">
-      <div aria-hidden="true" className="absolute inset-0 -z-10" style={{ background: 'radial-gradient(50% 50% at 90% 10%, rgba(0,122,255,.35), transparent 70%), radial-gradient(40% 40% at 0% 100%, rgba(77,163,255,.15), transparent 70%)' }} />
       <div className="mx-auto max-w-[1500px] px-5 md:px-10">
         <Reveal><p className="text-[11px] font-bold uppercase tracking-[0.35em] text-royal-light">Contact</p></Reveal>
         <Headline text="Let us give you|a free *quote*." className="font-display mt-6 text-[clamp(3rem,9vw,9rem)] font-extrabold" />
@@ -35,6 +36,13 @@ export default function Contact() {
           <Reveal delay={0.15} className="lg:col-span-5">
             <div className="lg:sticky lg:top-28">
               <p className="max-w-md text-lg leading-relaxed text-silver">Tell us a little about your home or business and we will get back to you with a clear, friendly quote. No pressure, no obligation.</p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                {team.map((p) => (
+                  <span key={p.name} className="glass inline-flex items-center gap-3 rounded-full py-1.5 pl-1.5 pr-4 text-sm font-bold">
+                    <Avatar person={p} className="h-11 w-11" />{p.name}<span className="font-medium text-silver">· {p.age}</span>
+                  </span>
+                ))}
+              </div>
               <div className="mt-8 border-t border-silver/15">
                 <Row label="Call or text" value={site.phone} href={`tel:${digits(site.phone)}`} copy={site.phone} />
                 <Row label="Email" value={site.email} href={`mailto:${site.email}`} copy={site.email} />

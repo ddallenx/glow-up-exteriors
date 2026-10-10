@@ -1,15 +1,15 @@
 @import "tailwindcss";
 
 @theme {
-  --color-midnight: #050d24;
-  --color-navy: #0a1a42;
-  --color-ink: #12296a;
+  --color-midnight: #000000;
+  --color-navy: #070a12;
+  --color-ink: #0c1328;
   --color-royal: #007aff;
   --color-royal-light: #6cb2ff;
   --color-royal-deep: #0058d6;
   --color-silver: #c3cad8;
   --color-silver-dim: #8b95ab;
-  --color-mist: #eef2fb;
+  --color-mist: #0a0a0a;
   --font-sans: "Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-serif: "Instrument Serif", ui-serif, Georgia, serif;
   --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -110,4 +110,4 @@ details > summary::-webkit-details-marker { display: none; }
 
 /* Let the per-page 3D backdrop show through dark sections; light sections stay solid. */
 main section.bg-midnight { background-color: transparent; }
-main section.bg-navy { background-color: rgba(10, 26, 66, 0.6); }
+main section.bg-navy { background-color: transparent; }

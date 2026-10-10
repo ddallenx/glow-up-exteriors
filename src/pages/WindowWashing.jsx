@@ -19,7 +19,6 @@ export default function WindowWashing() {
   return (
     <>
       <section className="relative isolate overflow-hidden bg-midnight pb-24 pt-36 md:pb-36 md:pt-44">
-        <div aria-hidden="true" className="absolute inset-0 -z-10" style={{ background: 'radial-gradient(55% 65% at 80% 30%, rgba(0,122,255,.45), transparent 70%), radial-gradient(30% 40% at 10% 90%, rgba(47,184,255,.18), transparent 70%)' }} />
         <div className="mx-auto grid max-w-[1500px] items-center gap-14 px-5 md:px-10 lg:grid-cols-2">
           <div>
             <Reveal><p className="text-[11px] font-bold uppercase tracking-[0.35em] text-royal-light">Service 01</p></Reveal>
@@ -46,9 +45,9 @@ export default function WindowWashing() {
         </div>
       </section>
 
-      <section id="compare" className="bg-mist py-28 text-navy md:py-40">
+      <section id="compare" className="bg-midnight py-28 md:py-40">
         <div className="mx-auto max-w-[1500px] px-5 md:px-10">
-          <SectionTitle light eyebrow="Before & after" title="Watch the *haze* wash away.">Hover (or press and hold on your phone) to watch each window wash clean, or switch to the slider to compare by hand.</SectionTitle>
+          <SectionTitle eyebrow="Before & after" title="Watch the *haze* wash away.">Hover (or press and hold on your phone) to watch each window wash clean, or switch to the slider to compare by hand.</SectionTitle>
           <RevealGroup className="mt-14 grid gap-6 lg:grid-cols-2" stagger={0.15}>
             <WindowCompare index={0} seed={2} initial={35} />
             <WindowCompare index={1} seed={9} initial={65} />

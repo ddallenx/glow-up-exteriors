@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
-import { heroVideo, site } from '../config/site'
+import { heroVideo, site, team } from '../config/site'
+import FounderCard from '../components/FounderCard'
 import { gsap } from '../lib/gsap'
 import OrbSection from '../components/OrbSection'
 import Tilt from '../components/Tilt'
@@ -50,8 +51,7 @@ function Hero() {
         ) : <SceneFallback />}
       </div>
       {/* readability gradients */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,#050d24_0%,rgba(5,13,36,.85)_30%,rgba(5,13,36,0)_52%)] md:bg-[linear-gradient(90deg,rgba(5,13,36,.92)_0%,rgba(5,13,36,.55)_36%,rgba(5,13,36,0)_62%)]" />
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 mix-blend-screen" style={{ background: 'radial-gradient(45% 55% at 78% 62%, rgba(0,122,255,.22), transparent 70%)' }} />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,#000000_0%,rgba(0,0,0,.85)_30%,rgba(0,0,0,0)_52%)] md:bg-[linear-gradient(90deg,rgba(0,0,0,.92)_0%,rgba(0,0,0,.55)_36%,rgba(0,0,0,0)_62%)]" />
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-44 bg-gradient-to-b from-midnight/85 to-transparent" />
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-midnight via-midnight/70 to-transparent" />
 
@@ -131,6 +131,15 @@ function Home() {
             className="font-display mt-8 max-w-6xl text-[clamp(2rem,5.2vw,4.8rem)] font-bold leading-[1.05] tracking-[-0.04em] text-white"
             text="We are a young, local crew with one obsession: leaving every home and business brighter, cleaner and *glowing*. Crystal-clear windows. Spotless exteriors. Service you can feel proud of."
           />
+        </div>
+      </section>
+
+      <section className="relative bg-midnight pb-24 md:pb-36">
+        <div className="mx-auto max-w-[1500px] px-5 md:px-10">
+          <SectionTitle eyebrow="The co-founders" title="Three founders,|one *promise*." />
+          <RevealGroup className="mt-6 grid gap-6 md:grid-cols-3" stagger={0.15}>
+            {team.map((p) => <FounderCard key={p.name} p={p} compact />)}
+          </RevealGroup>
           <Reveal className="mt-12"><Button to="/about" variant="ghost">Meet the team</Button></Reveal>
         </div>
       </section>
@@ -170,11 +179,11 @@ function Home() {
         </div>
       </section>
 
-      <section className="relative overflow-hidden bg-mist py-28 text-navy md:py-40">
+      <section className="relative overflow-hidden bg-midnight py-28 md:py-40">
         <div aria-hidden="true" className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-royal/40 to-transparent" />
         <div className="mx-auto grid max-w-[1500px] items-center gap-14 px-5 md:px-10 lg:grid-cols-12">
           <div className="lg:col-span-5">
-            <SectionTitle light eyebrow="The difference" title="Drag to see|the *glow up*.">
+            <SectionTitle eyebrow="The difference" title="Drag to see|the *glow up*.">
               Years of grime, water spots and haze — gone in one pass. Slide to compare a dirty window with the same pane after a Glow Up wash.
             </SectionTitle>
             <Reveal delay={0.15} className="mt-10"><Button to="/window-washing" variant="dark">See window washing</Button></Reveal>

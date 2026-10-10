@@ -15,7 +15,6 @@ export default function Commercial() {
   return (
     <>
       <section className="relative isolate overflow-hidden pb-24 pt-36 md:pb-32 md:pt-48">
-        <div aria-hidden="true" className="absolute inset-0 -z-10" style={{ background: 'radial-gradient(55% 60% at 85% 10%, rgba(0,122,255,.4), transparent 70%)' }} />
         <div className="mx-auto max-w-[1500px] px-5 md:px-10">
           <Reveal><p className="text-[11px] font-bold uppercase tracking-[0.35em] text-royal-light">Commercial services</p></Reveal>
           <Headline text="A cleaner first|impression for your *business*." className="font-display mt-6 text-[clamp(3rem,8.5vw,8.5rem)] font-extrabold" />

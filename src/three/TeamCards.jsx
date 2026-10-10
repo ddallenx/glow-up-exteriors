@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
-import { RoundedBox } from '@react-three/drei'
+import { RoundedBox, useTexture } from '@react-three/drei'
 import * as THREE from 'three'
 import Studio from './Studio'
 import { usePointer } from '../hooks/usePointer'
@@ -18,7 +18,7 @@ function wrap(g, text, x, y, maxW, lh) {
 
 function bg(g) {
   const gr = g.createLinearGradient(0, 0, CW, CH)
-  gr.addColorStop(0, '#0f2d78'); gr.addColorStop(0.55, '#091a48'); gr.addColorStop(1, '#050d24')
+  gr.addColorStop(0, '#0f2d78'); gr.addColorStop(0.55, '#091a48'); gr.addColorStop(1, '#000000')
   g.fillStyle = gr; g.fillRect(0, 0, CW, CH)
   const glow = g.createRadialGradient(CW * 0.85, CH * 0.12, 10, CW * 0.85, CH * 0.12, CW * 0.8)
   glow.addColorStop(0, 'rgba(0,122,255,.75)'); glow.addColorStop(1, 'rgba(0,122,255,0)')
@@ -29,20 +29,31 @@ function bg(g) {
   g.strokeStyle = 'rgba(190,215,255,.35)'; g.lineWidth = 3; g.strokeRect(14, 14, CW - 28, CH - 28)
 }
 
-function front(p) {
+function face() {
   const c = document.createElement('canvas'); c.width = CW; c.height = CH
   const g = c.getContext('2d'); bg(g)
-  g.fillStyle = 'rgba(255,255,255,.1)'; g.font = 'italic 760px "Instrument Serif", Georgia, serif'; g.textAlign = 'right'; g.fillText(p.name[0], CW - 20, 700)
+  const spot = g.createRadialGradient(CW / 2, CH * 0.42, 10, CW / 2, CH * 0.42, CW * 0.65)
+  spot.addColorStop(0, 'rgba(120,180,255,.55)'); spot.addColorStop(1, 'rgba(0,122,255,0)')
+  g.fillStyle = spot; g.fillRect(0, 0, CW, CH)
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t
+}
+
+/** Transparent overlay: name, role, focus, age badge, and a dark gradient so text reads over the photo. */
+function label(p) {
+  const c = document.createElement('canvas'); c.width = CW; c.height = CH
+  const g = c.getContext('2d')
+  const fade = g.createLinearGradient(0, CH * 0.58, 0, CH)
+  fade.addColorStop(0, 'rgba(0,0,0,0)'); fade.addColorStop(0.55, 'rgba(0,0,0,.78)'); fade.addColorStop(1, 'rgba(0,0,0,.95)')
+  g.fillStyle = fade; g.fillRect(14, CH * 0.58, CW - 28, CH * 0.42 - 14)
+  g.fillStyle = '#9cc8ff'; g.font = '700 22px Manrope, sans-serif'; g.letterSpacing = '8px'; g.fillText('GLOW UP EXTERIORS', 56, 84); g.letterSpacing = '0px'
+  g.strokeStyle = '#6cb2ff'; g.lineWidth = 4; g.beginPath(); g.arc(CW - 118, 138, 62, 0, 7); g.stroke()
+  g.fillStyle = 'rgba(0,0,0,.55)'; g.beginPath(); g.arc(CW - 118, 138, 60, 0, 7); g.fill()
+  g.fillStyle = '#fff'; g.textAlign = 'center'; g.font = '800 60px Manrope, sans-serif'; g.fillText(String(p.age), CW - 118, 158)
+  g.font = '700 15px Manrope, sans-serif'; g.fillStyle = '#9cc8ff'; g.letterSpacing = '4px'; g.fillText('YEARS OLD', CW - 116, 186); g.letterSpacing = '0px'
   g.textAlign = 'left'
-  g.fillStyle = '#9cc8ff'; g.font = '700 24px Manrope, sans-serif'; g.letterSpacing = '8px'; g.fillText('GLOW UP EXTERIORS', 56, 92); g.letterSpacing = '0px'
-  // age badge
-  g.strokeStyle = '#6cb2ff'; g.lineWidth = 4; g.beginPath(); g.arc(CW - 130, 150, 66, 0, 7); g.stroke()
-  g.fillStyle = '#fff'; g.textAlign = 'center'; g.font = '800 64px Manrope, sans-serif'; g.fillText(String(p.age), CW - 130, 172)
-  g.font = '700 16px Manrope, sans-serif'; g.fillStyle = '#9cc8ff'; g.letterSpacing = '4px'; g.fillText('YEARS OLD', CW - 128, 200); g.letterSpacing = '0px'
-  g.textAlign = 'left'
-  g.fillStyle = '#4da3ff'; g.font = '700 30px Manrope, sans-serif'; g.letterSpacing = '9px'; g.fillText(p.role.toUpperCase(), 56, 760); g.letterSpacing = '0px'
-  g.fillStyle = '#fff'; g.font = '800 150px Manrope, sans-serif'; g.letterSpacing = '-6px'; g.fillText(p.name, 50, 890); g.letterSpacing = '0px'
-  g.fillStyle = '#c3cad8'; g.font = 'italic 50px "Instrument Serif", Georgia, serif'; g.fillText(p.focus, 56, 962)
+  g.fillStyle = '#4da3ff'; g.font = '700 28px Manrope, sans-serif'; g.letterSpacing = '9px'; g.fillText(p.role.toUpperCase(), 56, 800); g.letterSpacing = '0px'
+  g.fillStyle = '#fff'; g.font = '800 140px Manrope, sans-serif'; g.letterSpacing = '-6px'; g.fillText(p.name, 50, 925); g.letterSpacing = '0px'
+  g.fillStyle = '#c3cad8'; g.font = 'italic 46px "Instrument Serif", Georgia, serif'; g.fillText(p.focus, 56, 982)
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t
 }
 
@@ -56,11 +67,28 @@ function back(p) {
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t
 }
 
+/** Background-removed cut-out standing in front of the card so it parallaxes as the card tilts. */
+function Photo({ person }) {
+  const tex = useTexture(person.photo)
+  const ar = tex.image.width / tex.image.height
+  const full = person.crop === 'full'
+  const h = full ? 3.75 : 2.4 / ar
+  const w = h * ar
+  const bottom = full ? -1.55 : -1.1
+  return (
+    <mesh position={[0, bottom + h / 2, 0.2]} renderOrder={2}>
+      <planeGeometry args={[w, h]} />
+      <meshBasicMaterial map={tex} transparent toneMapped={false} depthWrite={false} />
+    </mesh>
+  )
+}
+
 function Card({ person, x, index, reduced, full }) {
   const g = useRef(), light = useRef()
   const [hover, setHover] = useState(false)
   const flip = useRef(0)
-  const tf = useMemo(() => front(person), [person])
+  const tf = useMemo(() => face(), [])
+  const tl = useMemo(() => label(person), [person])
   const tb = useMemo(() => back(person), [person])
   const dom = useThree((s) => s.gl.domElement)
   const ptr = usePointer(useMemo(() => ({ current: dom }), [dom]))
@@ -83,6 +111,8 @@ function Card({ person, x, index, reduced, full }) {
         </RoundedBox>
         <mesh position={[0, 0, 0.076]}><planeGeometry args={[2.35, 3.13]} /><meshBasicMaterial map={tf} toneMapped={false} /></mesh>
         <mesh position={[0, 0, -0.076]} rotation={[0, Math.PI, 0]}><planeGeometry args={[2.35, 3.13]} /><meshBasicMaterial map={tb} toneMapped={false} /></mesh>
+        {person.photo && <Photo person={person} />}
+        <mesh position={[0, 0, 0.26]} renderOrder={4}><planeGeometry args={[2.35, 3.13]} /><meshBasicMaterial map={tl} transparent toneMapped={false} depthWrite={false} /></mesh>
         {/* glass sheen */}
         <mesh position={[0, 0, 0.085]}><planeGeometry args={[2.35, 3.13]} /><meshPhysicalMaterial transparent opacity={0.08} roughness={0.02} clearcoat={1} envMapIntensity={3.5} depthWrite={false} /></mesh>
         <pointLight ref={light} position={[0, 0.5, 1.4]} intensity={12} color="#4da3ff" distance={7} />

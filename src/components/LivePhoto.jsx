@@ -95,10 +95,10 @@ function Toggle({ mode, setMode, onPlay, playing }) {
   return (
     <div className="mt-4 flex flex-wrap items-center gap-2">
       <div role="group" aria-label="Comparison style" className="flex gap-2">
-        <button onClick={() => setMode('live')} aria-pressed={mode === 'live'} className={`${b} ${mode === 'live' ? 'border-royal bg-royal text-white' : 'border-navy/25 text-navy/70 hover:border-navy hover:text-navy'}`}>Live</button>
-        <button onClick={() => setMode('slider')} aria-pressed={mode === 'slider'} className={`${b} ${mode === 'slider' ? 'border-royal bg-royal text-white' : 'border-navy/25 text-navy/70 hover:border-navy hover:text-navy'}`}>Slider</button>
+        <button onClick={() => setMode('live')} aria-pressed={mode === 'live'} className={`${b} ${mode === 'live' ? 'border-royal bg-royal text-white' : 'border-silver/30 text-silver hover:border-white hover:text-white'}`}>Live</button>
+        <button onClick={() => setMode('slider')} aria-pressed={mode === 'slider'} className={`${b} ${mode === 'slider' ? 'border-royal bg-royal text-white' : 'border-silver/30 text-silver hover:border-white hover:text-white'}`}>Slider</button>
       </div>
-      {onPlay && <button onClick={onPlay} aria-pressed={playing} className={`${b} border-navy/25 text-navy/70 hover:border-navy hover:text-navy`}>{playing ? 'Back to before' : 'Play it'}</button>}
+      {onPlay && <button onClick={onPlay} aria-pressed={playing} className={`${b} border-silver/30 text-silver hover:border-white hover:text-white`}>{playing ? 'Back to before' : 'Play it'}</button>}
     </div>
   )
 }

@@ -22,7 +22,6 @@ export default function PressureWashing() {
   return (
     <>
       <section className="relative isolate overflow-hidden bg-midnight pb-16 pt-36 md:pb-24 md:pt-44">
-        <div aria-hidden="true" className="absolute inset-0 -z-10" style={{ background: 'radial-gradient(50% 60% at 90% 40%, rgba(0,122,255,.4), transparent 70%), radial-gradient(35% 40% at 0% 0%, rgba(47,184,255,.15), transparent 70%)' }} />
         <div className="mx-auto grid max-w-[1500px] items-center gap-10 px-5 md:px-10 lg:grid-cols-12">
           <div className="lg:col-span-6">
             <Reveal><p className="text-[11px] font-bold uppercase tracking-[0.35em] text-royal-light">Service 02</p></Reveal>
@@ -61,12 +60,12 @@ export default function PressureWashing() {
         </div>
       </section>
 
-      <section className="bg-mist py-28 text-navy md:py-40">
+      <section className="bg-midnight py-28 md:py-40">
         <div className="mx-auto max-w-[1500px] px-5 md:px-10">
-          <SectionTitle light eyebrow="Surfaces we clean" title="If it is outside,|we can *restore* it." />
-          <RevealGroup className="mt-14 grid gap-px overflow-hidden rounded-[28px] border border-navy/10 bg-navy/10 md:grid-cols-2 lg:grid-cols-3" stagger={0.08}>
+          <SectionTitle eyebrow="Surfaces we clean" title="If it is outside,|we can *restore* it." />
+          <RevealGroup className="mt-14 grid gap-px overflow-hidden rounded-[28px] border border-silver/15 bg-silver/10 md:grid-cols-2 lg:grid-cols-3" stagger={0.08}>
             {pressureService.surfaces.map(([t, d], i) => (
-              <div key={t} className="group relative bg-white p-8 transition-colors duration-500 hover:bg-navy hover:text-white md:p-10">
+              <div key={t} className="group relative bg-midnight p-8 transition-colors duration-500 hover:bg-ink md:p-10">
                 <span className="serif-accent text-2xl text-royal transition-colors group-hover:text-royal-light">0{i + 1}</span>
                 <h3 className="mt-8 text-2xl font-extrabold tracking-[-0.04em]">{t}</h3>
                 <p className="mt-3 text-[15px] leading-relaxed opacity-70">{d}</p>

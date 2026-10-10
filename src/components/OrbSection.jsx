@@ -13,7 +13,6 @@ export default function OrbSection({ eyebrow, title, body, cta, flip = false }) 
   const { reduced } = useTier()
   return (
     <section className="relative overflow-hidden bg-midnight py-12 md:py-24">
-      <div aria-hidden="true" className="absolute inset-0" style={{ background: `radial-gradient(50% 60% at ${flip ? 25 : 75}% 50%, rgba(0,122,255,.3), transparent 70%)` }} />
       <div className="relative mx-auto grid max-w-[1500px] items-center gap-6 px-5 md:px-10 lg:grid-cols-12">
         <div className={`lg:col-span-6 ${flip ? 'lg:order-2' : ''}`}>
           <SectionTitle eyebrow={eyebrow} title={title}>{body}</SectionTitle>

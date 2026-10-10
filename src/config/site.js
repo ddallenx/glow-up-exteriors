@@ -135,30 +135,33 @@ export const pressureService = {
 }
 
 // Divine, Jeremy and Colin are three equal co-founders — keep all entries in the same format.
-// Swap `photo` for a path like '/team/divine.jpg' (put the file in /public/team)
+// Photos are background-removed cut-outs in /public/team. `crop` is 'bust' (waist-up) or 'full' (full body).
 export const team = [
   {
     name: 'Divine',
+    crop: 'bust',
     age: 19,
     role: 'Co-Founder',
     focus: 'Community, service, meaning',
-    photo: '',
+    photo: '/team/divine.webp',
     bio: 'Passionate about helping the community, providing exceptional service and building something meaningful. Divine co-founded Glow Up Exteriors so every neighbor could take pride in their home.',
   },
   {
     name: 'Jeremy',
+    crop: 'full',
     age: 20,
     role: 'Co-Founder',
     focus: 'Friendlier homes, fuller potential',
-    photo: '',
+    photo: '/team/jeremy.webp',
     bio: 'Focused on creating a friendlier environment, improving homes and helping properties reach their full potential. Jeremy brings a hands-on eye for detail and a warm way with everyone he meets.',
   },
   {
     name: 'Colin',
+    crop: 'bust',
     age: 21,
     role: 'Co-Founder',
     focus: 'Prestige, quality, respect',
-    photo: '',
+    photo: '/team/colin.webp',
     bio: 'Dedicated to providing prestigious, high-quality services and building a respected, successful business. Colin holds every job to a high standard, from the first quote to the final walkthrough.',
   },
 ]
