@@ -13,8 +13,8 @@ export const site = {
   tagline: 'Residential window washing & pressure washing',
 
   // ── CONTACT DETAILS (placeholders — replace with your real info) ──
-  phone: '(555) 010-0199',
-  email: 'hello@glowupexteriors.com',
+  phone: '(518) 816-6878',
+  email: 'divineallen6@gmail.com',
   serviceArea: 'Local residential service — ask us if we cover your street',
   hours: 'Mon–Sat · 8am – 6pm',
 
