@@ -34,6 +34,8 @@ npm run preview
 
 ## Notes
 
+- The cinematic opening (fogged window, squeegee wipe, windows swing open, fly-through) plays on the first visit of each browser session. Add `?nointro` to a URL to skip it, or press the Skip button. It is skipped automatically for reduced-motion and weak devices.
+
 - Every page has its own interactive Three.js / React Three Fiber scene (house, glass wall, pressure-wash slab, 3D co-founder cards, glass droplet) plus a 3D fly-through page transition.
 - Weak devices and `prefers-reduced-motion` get lightweight fallbacks (flat cards, curtain transition, no postprocessing).
 - The 3D house is built from simple geometry (no model downloads), lazy-loaded, pauses when off-screen and lowers resolution on slow devices.

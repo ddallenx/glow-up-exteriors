@@ -5,6 +5,7 @@ import { getLenis, pageState, scrollToTop } from '../lib/scroll'
 import { useReducedMotion } from '../hooks/useMedia'
 import { useTier } from '../hooks/useTier'
 import { KIND, LABEL, tx } from '../lib/tx'
+import { introWanted } from '../lib/intro'
 import { LogoMark } from './Logo'
 
 const Ctx = createContext({ go: () => {} })
@@ -34,6 +35,10 @@ export function TransitionProvider({ children }) {
   // Opening curtain on first load
   useLayoutEffect(() => {
     if (!root.current) return
+    if (introWanted) {
+      gsap.set(root.current, { display: 'none' })
+      return
+    }
     if (reduced) {
       gsap.set(root.current, { display: 'none' })
       pageState.delay = 0
@@ -56,7 +61,7 @@ export function TransitionProvider({ children }) {
   useEffect(() => {
     if (!use3d) return
     const idle = window.requestIdleCallback || ((f) => setTimeout(f, 1500))
-    const id = idle(() => { loadTx().then(() => setMount3d(true)) }, { timeout: 1800 })
+    const id = idle(() => { setTimeout(() => loadTx().then(() => setMount3d(true)), introWanted ? 6500 : 0) }, { timeout: 1800 })
     return () => window.cancelIdleCallback?.(id)
   }, [use3d])
 

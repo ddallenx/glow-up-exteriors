@@ -133,22 +133,28 @@ function GarageDoor({ position }) {
   )
 }
 
-export default function House({ reduced = false, desktop = true }) {
-  const sh = true
-  const m = useMemo(() => {
-    const stucco = stuccoMaps([1.6, 1])
-    const clad = claddingMaps([1.6, 1])
-    const stone = stoneMaps([0.7, 1.4])
-    const grass = grassMaps([36, 36])
-    return {
-      stucco, clad, stone, grass,
+let cachedMats = null
+/** Procedural textures are expensive; build them once (and ahead of time during the intro). */
+export function prewarmHouse() {
+  if (!cachedMats) {
+    cachedMats = {
+      stucco: stuccoMaps([1.6, 1]),
+      clad: claddingMaps([1.6, 1]),
+      stone: stoneMaps([0.7, 1.4]),
+      grass: grassMaps([36, 36]),
       wood: woodMap([1, 1]),
       slat: woodMap([1, 1]),
       concrete: concreteMap([1, 3.2]),
       pavers: paverTexture([2.4, 1.2]),
       mulch: mulchMap([8, 1]),
     }
-  }, [])
+  }
+  return cachedMats
+}
+
+export default function House({ reduced = false, desktop = true }) {
+  const sh = true
+  const m = useMemo(() => prewarmHouse(), [])
 
   return (
     <group>

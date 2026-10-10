@@ -8,7 +8,7 @@ export function webglOk() {
   } catch { return false }
 }
 
-const weak = () => {
+export const weak = () => {
   const n = navigator
   return (n.deviceMemory && n.deviceMemory <= 2) || (n.hardwareConcurrency && n.hardwareConcurrency <= 2) || n.connection?.saveData === true
 }

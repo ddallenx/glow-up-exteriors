@@ -1,6 +1,8 @@
-import { lazy, Suspense, useEffect } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import { TransitionProvider } from './components/Transition'
+import Intro from './components/Intro'
+import { introWanted } from './lib/intro'
 import Layout from './components/Layout'
 import Home from './pages/Home'
 
@@ -14,6 +16,7 @@ const NotFound = lazy(() => import('./pages/NotFound'))
 const prefetch = () => [import('./pages/WindowWashing'), import('./pages/PressureWashing'), import('./pages/Commercial'), import('./pages/About'), import('./pages/Contact')]
 
 export default function App() {
+  const [booted, setBooted] = useState(!introWanted)
   useEffect(() => {
     const idle = window.requestIdleCallback || ((f) => setTimeout(f, 1200))
     const id = idle(prefetch, { timeout: 2500 })
@@ -21,7 +24,8 @@ export default function App() {
   }, [])
   return (
     <TransitionProvider>
-      <Suspense fallback={<div className="min-h-screen bg-midnight" />}>
+      {introWanted && <Intro onOpen={() => setBooted(true)} />}
+      {booted && <Suspense fallback={<div className="min-h-screen bg-midnight" />}>
         <Routes>
           <Route element={<Layout />}>
             <Route index element={<Home />} />
@@ -33,7 +37,7 @@ export default function App() {
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
-      </Suspense>
+      </Suspense>}
     </TransitionProvider>
   )
 }
