@@ -53,7 +53,7 @@ export default function QuoteForm() {
   if (status === 'sent' || status === 'mailto') {
     return (
       <div data-done className="glass flex min-h-[520px] flex-col items-center justify-center rounded-[32px] p-10 text-center" role="status">
-        <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-royal-light to-royal-deep shadow-[0_0_60px_rgba(42,82,255,.6)]">
+        <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-royal-light to-royal-deep shadow-[0_0_60px_rgba(63,114,255,.6)]">
           <svg viewBox="0 0 24 24" className="h-9 w-9" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
         </div>
         <h3 className="font-display text-4xl font-extrabold">{status === 'sent' ? 'Request received.' : 'Almost there.'}</h3>
@@ -77,7 +77,7 @@ export default function QuoteForm() {
         <legend className={label}>What do you need?</legend>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           {SERVICES.map((s) => (
-            <label key={s} className={`flex min-h-[56px] cursor-pointer items-center justify-center rounded-2xl border px-4 text-center text-[15px] font-bold transition-all has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-royal-light ${service === s ? 'border-royal bg-royal/25 text-white shadow-[0_0_30px_-6px_rgba(42,82,255,.8)]' : 'border-silver/20 text-silver hover:border-silver/50'}`}>
+            <label key={s} className={`flex min-h-[56px] cursor-pointer items-center justify-center rounded-2xl border px-4 text-center text-[15px] font-bold transition-all has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-royal-light ${service === s ? 'border-royal bg-royal/25 text-white shadow-[0_0_30px_-6px_rgba(63,114,255,.8)]' : 'border-silver/20 text-silver hover:border-silver/50'}`}>
               <input type="radio" name="service" value={s} checked={service === s} onChange={() => setService(s)} className="sr-only" />
               {s}
             </label>

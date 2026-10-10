@@ -4,7 +4,7 @@ import { TLink } from './Transition'
 import { useFinePointer, useReducedMotion } from '../hooks/useMedia'
 
 const variants = {
-  primary: 'bg-gradient-to-br from-royal-light via-royal to-royal-deep text-white shadow-[0_12px_40px_-8px_rgba(42,82,255,0.7)] hover:shadow-[0_16px_50px_-6px_rgba(42,82,255,0.9)]',
+  primary: 'bg-gradient-to-br from-royal-light via-royal to-royal-deep text-white shadow-[0_12px_40px_-8px_rgba(63,114,255,0.7)] hover:shadow-[0_16px_50px_-6px_rgba(63,114,255,0.9)]',
   ghost: 'border border-silver/30 bg-white/[0.04] text-white backdrop-blur hover:border-silver/60 hover:bg-white/10',
   light: 'bg-white text-navy hover:bg-mist shadow-[0_12px_40px_-12px_rgba(255,255,255,0.4)]',
   dark: 'bg-navy text-white hover:bg-ink',

@@ -97,20 +97,20 @@ export const pressureService = {
   ],
 }
 
-// Swap `photo` for a path like '/team/divine.jpg' (put the file in /public/team)
+// All three of you are founders. Swap `photo` for a path like '/team/divine.jpg' (put the file in /public/team)
 export const team = [
   {
     name: 'Divine',
     age: 19,
-    role: 'Founder',
+    role: 'Co-Founder',
     focus: 'Community first',
     photo: '',
-    bio: 'Divine started Glow Up Exteriors at nineteen with a simple belief: a clean home lifts everyone around it. Passionate about helping the community, Divine leads the company with energy, care and a refusal to cut corners.',
+    bio: 'Divine co-founded Glow Up Exteriors at nineteen with a simple belief: a clean home lifts everyone around it. Passionate about helping the community, Divine brings energy, care and a refusal to cut corners to every job.',
   },
   {
     name: 'Jeremy',
     age: 20,
-    role: 'Homes & Community',
+    role: 'Co-Founder',
     focus: 'Better homes, friendlier streets',
     photo: '',
     bio: 'At twenty, Jeremy is focused on improving homes and creating a friendlier environment — for customers and neighbors alike. He brings a hands-on eye for detail and a warm, easygoing way with everyone he meets.',
@@ -118,9 +118,18 @@ export const team = [
   {
     name: 'Colin',
     age: null,
-    role: 'Service Standards',
+    role: 'Co-Founder',
     focus: 'Prestige in every job',
     photo: '',
     bio: 'Colin is dedicated to prestigious service and building an excellent company. He holds every job to a high standard, from the first quote to the final walkthrough, so that Glow Up becomes a name people trust.',
   },
 ]
+
+/**
+ * BEFORE / AFTER PHOTOS
+ * Add your own job photos to /public/ba/ and list them here, e.g.
+ *   { before: '/ba/window1-before.jpg', after: '/ba/window1-after.jpg', label: 'Front windows' }
+ * Photos of the SAME window from the SAME angle work best. While this list is
+ * empty, the site shows illustrated examples instead.
+ */
+export const beforeAfter = []

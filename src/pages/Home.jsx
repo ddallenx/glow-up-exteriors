@@ -6,8 +6,7 @@ import Button from '../components/Button'
 import Marquee from '../components/Marquee'
 import SectionTitle from '../components/SectionTitle'
 import AnimatedWindows from '../components/AnimatedWindows'
-import BeforeAfter from '../components/BeforeAfter'
-import WindowScene from '../components/WindowScene'
+import WindowCompare from '../components/WindowCompare'
 import Steps from '../components/Steps'
 import Cta from '../components/Cta'
 import { TLink } from '../components/Transition'
@@ -23,7 +22,7 @@ function Hero() {
 
   return (
     <section className="relative isolate min-h-[100svh] overflow-hidden bg-midnight">
-      <div className="absolute inset-x-0 bottom-0 h-[54svh] md:inset-0 md:h-auto">
+      <div className="absolute inset-x-0 bottom-0 h-[54svh] [mask-image:linear-gradient(to_bottom,transparent,black_22%)] md:inset-0 md:h-auto md:[mask-image:none]">
         {gl ? (
           <SceneBoundary>
             <Suspense fallback={<SceneFallback />}>
@@ -33,7 +32,8 @@ function Hero() {
         ) : <SceneFallback />}
       </div>
       {/* readability gradients */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,#040a1c_0%,rgba(4,10,28,.85)_30%,rgba(4,10,28,0)_52%)] md:bg-[linear-gradient(90deg,rgba(4,10,28,.92)_0%,rgba(4,10,28,.55)_36%,rgba(4,10,28,0)_62%)]" />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,#071634_0%,rgba(7,22,52,.85)_30%,rgba(7,22,52,0)_52%)] md:bg-[linear-gradient(90deg,rgba(7,22,52,.92)_0%,rgba(7,22,52,.55)_36%,rgba(7,22,52,0)_62%)]" />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-44 bg-gradient-to-b from-midnight/85 to-transparent" />
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-midnight to-transparent" />
 
       <div className="pointer-events-none relative z-10 mx-auto flex min-h-[100svh] max-w-[1500px] flex-col justify-start px-5 pb-[calc(54svh-2rem)] pt-28 md:justify-center md:px-10 md:pb-16 md:pt-24">
@@ -90,7 +90,7 @@ function ServiceCard({ to, index, title, blurb, items, visual }) {
 }
 
 const SprayVisual = () => (
-  <div className="relative h-full w-full bg-gradient-to-b from-[#16264f] to-[#0a1433]">
+  <div className="relative h-full w-full bg-gradient-to-b from-[#1c3470] to-[#0f2150]">
     <div className="absolute inset-0 opacity-90" style={{ background: 'repeating-linear-gradient(90deg, #7d879c 0 58px, #4d5348 58px 62px)' }} />
     <div className="pane-grime absolute inset-0" style={{ '--dur': '6s', background: 'radial-gradient(circle at 30% 40%, rgba(40,48,34,.9), rgba(40,46,32,.85))' }} />
     <div className="pane-squeegee absolute inset-y-0 w-10 -translate-x-1/2" style={{ '--dur': '6s', background: 'linear-gradient(90deg, transparent, rgba(190,210,255,.9), transparent)', filter: 'blur(6px)' }} />
@@ -138,7 +138,7 @@ function Home() {
             <Reveal delay={0.15} className="mt-10"><Button to="/window-washing" variant="dark">See window washing</Button></Reveal>
           </div>
           <Reveal className="lg:col-span-7">
-            <BeforeAfter before={<WindowScene dirty seed={5} />} after={<WindowScene seed={5} />} />
+            <WindowCompare index={0} seed={5} />
           </Reveal>
         </div>
       </section>

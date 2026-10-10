@@ -26,7 +26,7 @@ export default function Contact() {
   useDocumentTitle('Free Quote')
   return (
     <section className="relative isolate overflow-hidden bg-midnight pb-28 pt-36 md:pb-40 md:pt-44">
-      <div aria-hidden="true" className="absolute inset-0 -z-10" style={{ background: 'radial-gradient(50% 50% at 90% 10%, rgba(42,82,255,.35), transparent 70%), radial-gradient(40% 40% at 0% 100%, rgba(111,140,255,.15), transparent 70%)' }} />
+      <div aria-hidden="true" className="absolute inset-0 -z-10" style={{ background: 'radial-gradient(50% 50% at 90% 10%, rgba(63,114,255,.35), transparent 70%), radial-gradient(40% 40% at 0% 100%, rgba(142,170,255,.15), transparent 70%)' }} />
       <div className="mx-auto max-w-[1500px] px-5 md:px-10">
         <Reveal><p className="text-[11px] font-bold uppercase tracking-[0.35em] text-royal-light">Contact</p></Reveal>
         <Headline text="Let us give you|a free *quote*." className="font-display mt-6 text-[clamp(3rem,9vw,9rem)] font-extrabold" />

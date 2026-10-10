@@ -1,12 +1,15 @@
 import { Suspense, useEffect, useRef, useState } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { Environment, Lightformer, MeshReflectorMaterial, PerformanceMonitor, Sparkles } from '@react-three/drei'
+import { Environment, Lightformer, PerformanceMonitor, Sky } from '@react-three/drei'
+import { Bloom, EffectComposer, N8AO, ToneMapping, Vignette } from '@react-three/postprocessing'
+import { ToneMappingMode } from 'postprocessing'
 import * as THREE from 'three'
 import { gsap } from '../lib/gsap'
 import House from './House'
 import Water from './Water'
 
-const BG = '#040a1c'
+const HORIZON = '#c9b6bd'
+const SUN = new THREE.Vector3(-34, 7, 26)
 
 function Rig({ desktop, reduced }) {
   const { camera, pointer, size } = useThree()
@@ -27,41 +30,29 @@ function Rig({ desktop, reduced }) {
     const sway = reduced ? 0 : Math.sin(s.clock.elapsedTime * 0.25) * 0.08
     const az = THREE.MathUtils.lerp(1.15, 0.5, e) + pointer.x * 0.16 + scrollY * 0.55 + sway
     const portrait = aspect < 1.1
-    const fit = 14 / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * aspect)
-    const r = Math.max(desktop ? 21 : 0, fit) * THREE.MathUtils.lerp(1.6, 1, e) + scrollY * 3
-    const y = THREE.MathUtils.lerp(12, 6.2, e) + pointer.y * 0.7 - scrollY * 0.8
+    const fit = 19 / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * aspect)
+    const r = Math.max(desktop ? 27 : 0, fit) * THREE.MathUtils.lerp(1.6, 1, e) + scrollY * 3
+    const y = THREE.MathUtils.lerp(10, 4.6, e) + pointer.y * 0.5 - scrollY * 0.8
     const target = new THREE.Vector3(r * Math.sin(az) + 0.5, y, r * Math.cos(az) + 1)
     cur.current.lerp(target, 1 - Math.pow(0.0025, dt))
     camera.position.copy(cur.current)
-    const lx = desktop ? -2.6 : 0.3
-    look.current.set(lx, portrait ? 2.2 : 2.5, 1.2)
+    const lx = desktop ? -3.0 : 1.6
+    look.current.set(lx, portrait ? 2.4 : 2.6, 1.2)
     camera.lookAt(look.current)
   })
   return null
 }
 
+/** Golden-hour image-based lighting: warm low sun panel, cool sky dome, bounce from the lawn. */
 function Studio() {
   return (
     <Environment resolution={256} frames={1}>
-      <Lightformer form="rect" intensity={2.4} position={[0, 7, 8]} scale={[16, 4, 1]} color="#dfe8ff" />
-      <Lightformer form="rect" intensity={3.5} position={[-9, 3, 5]} rotation-y={Math.PI / 2} scale={[10, 3, 1]} color="#6f8cff" />
-      <Lightformer form="rect" intensity={1.6} position={[9, 4, 3]} rotation-y={-Math.PI / 2} scale={[8, 3, 1]} color="#ffffff" />
-      <Lightformer form="ring" intensity={2} position={[2, 9, 10]} scale={6} color="#bcd0ff" />
-      <Lightformer form="rect" intensity={0.8} position={[0, 2, -10]} scale={[20, 5, 1]} color="#2a52ff" />
+      <Lightformer form="rect" intensity={6} position={[-14, 5, 10]} rotation-y={Math.PI / 2.6} scale={[8, 5, 1]} color="#ffb877" />
+      <Lightformer form="rect" intensity={1.6} position={[0, 12, 0]} rotation-x={Math.PI / 2} scale={[30, 30, 1]} color="#8fb2ff" />
+      <Lightformer form="rect" intensity={1.2} position={[14, 4, 6]} rotation-y={-Math.PI / 2} scale={[14, 5, 1]} color="#9db8f0" />
+      <Lightformer form="rect" intensity={0.9} position={[0, 3, 16]} scale={[30, 5, 1]} color="#f2d6c0" />
+      <Lightformer form="rect" intensity={0.5} position={[0, -6, 0]} rotation-x={-Math.PI / 2} scale={[40, 40, 1]} color="#3b5a34" />
     </Environment>
-  )
-}
-
-function Ground({ desktop }) {
-  return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.001, 0]} receiveShadow>
-      <circleGeometry args={[40, 64]} />
-      {desktop ? (
-        <MeshReflectorMaterial blur={[400, 120]} resolution={512} mixBlur={1} mixStrength={14} mirror={0.55} depthScale={0.6} minDepthThreshold={0.6} maxDepthThreshold={1.4} color="#08122e" roughness={0.9} metalness={0.4} />
-      ) : (
-        <meshStandardMaterial color="#08122e" roughness={0.6} metalness={0.4} />
-      )}
-    </mesh>
   )
 }
 
@@ -79,32 +70,41 @@ export default function HouseScene({ desktop, reduced }) {
   return (
     <div ref={wrap} className="absolute inset-0" role="img" aria-label="Interactive 3D model of a modern home with glass windows being washed. Move your pointer over it to spray water.">
       <Canvas
-        shadows={desktop}
+        shadows
         dpr={[1, dpr]}
         frameloop={visible ? 'always' : 'never'}
-        camera={{ fov: desktop ? 32 : 38, near: 0.1, far: 120, position: [14, 9, 18] }}
-        gl={{ antialias: true, powerPreference: 'high-performance' }}
+        camera={{ fov: desktop ? 30 : 36, near: 0.1, far: 300, position: [14, 9, 18] }}
+        gl={{ antialias: !desktop, powerPreference: 'high-performance' }}
         style={{ touchAction: 'pan-y' }}
-        onCreated={({ gl }) => { gl.toneMapping = THREE.ACESFilmicToneMapping; gl.toneMappingExposure = 1.05 }}
+        onCreated={({ gl }) => { gl.toneMapping = THREE.ACESFilmicToneMapping; gl.toneMappingExposure = 1 }}
       >
         <PerformanceMonitor onDecline={() => setDpr(1)} />
-        <color attach="background" args={[BG]} />
-        <fog attach="fog" args={[BG, 22, 48]} />
+        <fog attach="fog" args={[HORIZON, 38, 105]} />
         <Rig desktop={desktop} reduced={reduced} />
+        <Sky distance={200} sunPosition={SUN.toArray()} turbidity={8} rayleigh={2.2} mieCoefficient={0.006} mieDirectionalG={0.85} />
 
-        <ambientLight intensity={0.3} color="#9fb4ff" />
-        <hemisphereLight args={['#8fa8ff', '#0a1230', 0.35]} />
-        <directionalLight position={[-7, 12, 10]} intensity={1.7} color="#b9ccff" castShadow={desktop} shadow-mapSize={[2048, 2048]} shadow-camera-left={-12} shadow-camera-right={12} shadow-camera-top={12} shadow-camera-bottom={-6} shadow-bias={-0.0004} />
-        <pointLight position={[9, 4, -3]} intensity={22} color="#2a52ff" distance={26} />
-        <pointLight position={[-6, 5, 9]} intensity={25} color="#9db1ff" distance={22} />
+        <hemisphereLight args={['#9db8ff', '#4c6a3a', 0.8]} />
+        <directionalLight
+          position={SUN.toArray()} intensity={5.2} color="#ffb77a" castShadow
+          shadow-mapSize={desktop ? [2048, 2048] : [1024, 1024]}
+          shadow-camera-left={-16} shadow-camera-right={16} shadow-camera-top={14} shadow-camera-bottom={-8} shadow-camera-near={5} shadow-camera-far={90}
+          shadow-bias={-0.0003} shadow-normalBias={0.04} shadow-radius={4}
+        />
 
         <Suspense fallback={null}>
           <Studio />
           <House desktop={desktop} reduced={reduced} />
-          <Ground desktop={desktop} />
           <Water ambient={desktop ? 90 : 45} spray={desktop ? 200 : 110} reduced={reduced} />
-          {!reduced && <Sparkles count={desktop ? 60 : 24} scale={[22, 9, 18]} position={[0, 4, 2]} size={2.2} speed={0.25} opacity={0.5} color="#bcd0ff" />}
         </Suspense>
+
+        {desktop && (
+          <EffectComposer multisampling={4} disableNormalPass>
+            <N8AO aoRadius={1.4} intensity={2.6} distanceFalloff={1} quality="medium" halfRes />
+            <Bloom luminanceThreshold={1} intensity={0.45} mipmapBlur radius={0.7} />
+            <Vignette offset={0.25} darkness={0.5} />
+            <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
+          </EffectComposer>
+        )}
       </Canvas>
     </div>
   )

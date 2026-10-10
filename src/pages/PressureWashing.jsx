@@ -13,7 +13,7 @@ export default function PressureWashing() {
   return (
     <>
       <section className="relative isolate overflow-hidden bg-midnight pb-16 pt-36 md:pb-24 md:pt-44">
-        <div aria-hidden="true" className="absolute inset-0 -z-10" style={{ background: 'radial-gradient(50% 60% at 10% 30%, rgba(42,82,255,.3), transparent 70%)' }} />
+        <div aria-hidden="true" className="absolute inset-0 -z-10" style={{ background: 'radial-gradient(50% 60% at 10% 30%, rgba(63,114,255,.3), transparent 70%)' }} />
         <div className="mx-auto max-w-[1500px] px-5 md:px-10">
           <Reveal><p className="text-[11px] font-bold uppercase tracking-[0.35em] text-royal-light">Service 02</p></Reveal>
           <Headline text="Wash away|the *years*." className="font-display mt-6 text-[clamp(3.2rem,10vw,10rem)] font-extrabold" />

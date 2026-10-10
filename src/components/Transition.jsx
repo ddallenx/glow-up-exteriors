@@ -86,7 +86,7 @@ export function TransitionProvider({ children }) {
               key={i}
               data-panel
               className="h-full flex-1"
-              style={{ background: i % 2 ? 'linear-gradient(180deg,#0a1633,#06102a)' : 'linear-gradient(180deg,#0d1b3d,#081230)', marginRight: -1 }}
+              style={{ background: i % 2 ? 'linear-gradient(180deg,#0e2150,#0a1c42)' : 'linear-gradient(180deg,#132a5e,#0c1d48)', marginRight: -1 }}
             />
           ))}
         </div>

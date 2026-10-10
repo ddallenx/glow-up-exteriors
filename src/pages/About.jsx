@@ -19,7 +19,7 @@ export default function About() {
   return (
     <>
       <section className="relative isolate overflow-hidden bg-midnight pb-20 pt-36 md:pb-32 md:pt-48">
-        <div aria-hidden="true" className="absolute inset-0 -z-10" style={{ background: 'radial-gradient(60% 60% at 80% 0%, rgba(42,82,255,.35), transparent 70%)' }} />
+        <div aria-hidden="true" className="absolute inset-0 -z-10" style={{ background: 'radial-gradient(60% 60% at 80% 0%, rgba(63,114,255,.35), transparent 70%)' }} />
         <div className="mx-auto max-w-[1500px] px-5 md:px-10">
           <Reveal><p className="text-[11px] font-bold uppercase tracking-[0.35em] text-royal-light">About Glow Up Exteriors</p></Reveal>
           <Headline text="Young hands.|Serious *standards*." className="font-display mt-6 text-[clamp(3.2rem,10vw,10rem)] font-extrabold" />
@@ -30,7 +30,7 @@ export default function About() {
         <div className="mx-auto max-w-[1500px] px-5 md:px-10">
           <ScrubText
             className="font-display max-w-6xl text-[clamp(1.8rem,4.4vw,4rem)] font-bold leading-[1.08] tracking-[-0.04em]"
-            text="Glow Up Exteriors began with a simple idea: a clean home lifts a whole street. Three young people, a love for the community and a refusal to settle for *good enough*."
+            text="Glow Up Exteriors began with a simple idea: a clean home lifts a whole street. Three young co-founders, a love for the community and a refusal to settle for *good enough*."
           />
         </div>
       </section>

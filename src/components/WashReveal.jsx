@@ -209,7 +209,7 @@ export default function WashReveal() {
 
       <div
         ref={wrap}
-        className="relative aspect-[4/3] w-full cursor-none touch-none select-none overflow-hidden rounded-[28px] border border-silver/20 shadow-[0_50px_100px_-30px_rgba(42,82,255,.4)] md:aspect-[16/9]"
+        className="relative aspect-[4/3] w-full cursor-none touch-none select-none overflow-hidden rounded-[28px] border border-silver/20 shadow-[0_50px_100px_-30px_rgba(63,114,255,.4)] md:aspect-[16/9]"
         onPointerDown={(e) => { state.current.pressed = true; state.current.touched = true; state.current.last = null; e.currentTarget.setPointerCapture(e.pointerId); onMove(e) }}
         onPointerUp={() => { state.current.pressed = false; state.current.last = null; measure() }}
         onPointerCancel={() => { state.current.pressed = false }}

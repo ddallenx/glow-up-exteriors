@@ -4,8 +4,7 @@ import { Headline, Reveal, RevealGroup } from '../components/Reveal'
 import Button from '../components/Button'
 import SectionTitle from '../components/SectionTitle'
 import AnimatedWindows from '../components/AnimatedWindows'
-import BeforeAfter from '../components/BeforeAfter'
-import WindowScene from '../components/WindowScene'
+import WindowCompare from '../components/WindowCompare'
 import Steps from '../components/Steps'
 import Faq from '../components/Faq'
 import Cta from '../components/Cta'
@@ -15,7 +14,7 @@ export default function WindowWashing() {
   return (
     <>
       <section className="relative isolate overflow-hidden bg-midnight pb-24 pt-36 md:pb-36 md:pt-44">
-        <div aria-hidden="true" className="absolute inset-0 -z-10" style={{ background: 'radial-gradient(50% 60% at 85% 20%, rgba(42,82,255,.35), transparent 70%)' }} />
+        <div aria-hidden="true" className="absolute inset-0 -z-10" style={{ background: 'radial-gradient(50% 60% at 85% 20%, rgba(63,114,255,.35), transparent 70%)' }} />
         <div className="mx-auto grid max-w-[1500px] items-center gap-14 px-5 md:px-10 lg:grid-cols-2">
           <div>
             <Reveal><p className="text-[11px] font-bold uppercase tracking-[0.35em] text-royal-light">Service 01</p></Reveal>
@@ -31,8 +30,8 @@ export default function WindowWashing() {
         <div className="mx-auto max-w-[1500px] px-5 md:px-10">
           <SectionTitle light eyebrow="Before & after" title="Slide the *haze* away.">Drag the handle (or use your arrow keys) to compare. Two very different panes, one thorough clean.</SectionTitle>
           <RevealGroup className="mt-14 grid gap-6 lg:grid-cols-2" stagger={0.15}>
-            <BeforeAfter before={<WindowScene dirty seed={2} />} after={<WindowScene seed={2} />} initial={35} />
-            <BeforeAfter before={<WindowScene dirty seed={9} />} after={<WindowScene seed={9} />} initial={65} />
+            <WindowCompare index={0} seed={2} initial={35} />
+            <WindowCompare index={1} seed={9} initial={65} />
           </RevealGroup>
         </div>
       </section>
