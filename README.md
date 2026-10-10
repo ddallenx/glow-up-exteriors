@@ -11,6 +11,8 @@ services text, FAQs and team bios there. Commit and push — Vercel redeploys au
 
 - **Quote form:** paste a free [Formspree](https://formspree.io) endpoint into `formEndpoint` so requests arrive in your inbox. Left blank, the form opens the visitor's email app with the request pre-filled.
 - **Reviews:** only real reviews should go in `reviews`. The section stays hidden while it is empty.
+- **Before/after Live Photos:** list your own photo pairs or short clips in `beforeAfter` in `site.js` (instructions are in the file). Visitors hover or press and hold to watch it wash clean.
+- **Commercial services:** edit `commercialService` in `site.js`.
 - **Hero video (optional):** drop an `.mp4` you own or have licensed into `public/video/` and set `heroVideo.src` in `site.js`. The homepage then plays it behind the headline instead of the 3D house.
 - **Team photos:** drop images in `public/team/` and set `photo: '/team/divine.jpg'`.
 - **Contact placeholders:** the phone number and email currently in the file are placeholders — replace them before launch.

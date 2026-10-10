@@ -4,9 +4,9 @@ import { useEffect, useRef } from 'react'
 export function usePointer(elRef) {
   const p = useRef({ x: 0, y: 0, inside: false, down: false })
   useEffect(() => {
-    const el = elRef?.current || document.body
+    const el = elRef?.current
     const move = (e) => {
-      const r = el.getBoundingClientRect()
+      const r = el ? el.getBoundingClientRect() : { left: 0, top: 0, width: window.innerWidth, height: window.innerHeight, right: window.innerWidth, bottom: window.innerHeight }
       p.current.x = ((e.clientX - r.left) / r.width) * 2 - 1
       p.current.y = -(((e.clientY - r.top) / r.height) * 2 - 1)
       p.current.inside = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom

@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { site } from '../config/site'
 import { gsap } from '../lib/gsap'
 import Button from './Button'
@@ -10,7 +11,10 @@ const label = 'mb-2 block text-[12px] font-bold uppercase tracking-[0.2em] text-
 export default function QuoteForm() {
   const [errors, setErrors] = useState({})
   const [status, setStatus] = useState('idle') // idle | sending | sent | mailto | error
+  const [params] = useSearchParams()
   const [service, setService] = useState('Both')
+  const [property, setProperty] = useState(params.get('type') === 'commercial' ? 'Commercial' : 'Residential')
+  const commercial = property === 'Commercial'
   const form = useRef(null)
 
   const validate = (d) => {
@@ -26,6 +30,7 @@ export default function QuoteForm() {
     ev.preventDefault()
     const data = Object.fromEntries(new FormData(form.current))
     data.service = service
+    data.property = property
     if (data.company) return // honeypot
     const e = validate(data)
     setErrors(e)
@@ -33,7 +38,7 @@ export default function QuoteForm() {
       form.current.querySelector('[aria-invalid="true"]')?.focus()
       return
     }
-    const summary = `New quote request — ${site.name}\n\nName: ${data.name}\nPhone: ${data.phone}\nEmail: ${data.email}\nAddress/area: ${data.address}\nService: ${data.service}\nHome type: ${data.home}\nTiming: ${data.timing}\n\nDetails:\n${data.message || '(none)'}`
+    const summary = `New quote request — ${site.name}\n\nName: ${data.name}\nPhone: ${data.phone}\nEmail: ${data.email}\nAddress/area: ${data.address}\nProperty: ${data.property}${data.business ? ' — ' + data.business : ''}\nService: ${data.service}\nProperty type: ${data.home}\nTiming: ${data.timing}\n\nDetails:\n${data.message || '(none)'}`
     if (site.formEndpoint) {
       setStatus('sending')
       try {
@@ -74,6 +79,18 @@ export default function QuoteForm() {
     <form ref={form} onSubmit={submit} noValidate className="glass relative rounded-[32px] p-6 md:p-10" aria-label="Free quote request">
       <div className="absolute left-[-9999px]" aria-hidden="true"><label>Company<input name="company" tabIndex={-1} autoComplete="off" /></label></div>
       <fieldset className="mb-8">
+        <legend className={label}>Property</legend>
+        <div className="grid grid-cols-2 gap-3">
+          {['Residential', 'Commercial'].map((s) => (
+            <label key={s} className={`flex min-h-[56px] cursor-pointer items-center justify-center rounded-2xl border px-4 text-center text-[15px] font-bold transition-all has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-royal-light ${property === s ? 'border-royal bg-royal/25 text-white shadow-[0_0_30px_-6px_rgba(0,122,255,.8)]' : 'border-silver/20 text-silver hover:border-silver/50'}`}>
+              <input type="radio" name="property" value={s} checked={property === s} onChange={() => setProperty(s)} className="sr-only" />
+              {s}
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
+      <fieldset className="mb-8">
         <legend className={label}>What do you need?</legend>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           {SERVICES.map((s) => (
@@ -86,14 +103,15 @@ export default function QuoteForm() {
       </fieldset>
 
       <div className="grid gap-6 md:grid-cols-2">
+        {commercial && <div className="md:col-span-2"><label className={label} htmlFor="business">Business or property name</label><input id="business" name="business" autoComplete="organization" className={field} placeholder="Acme Dental, Maple Plaza HOA…" /></div>}
         <div><label className={label} htmlFor="name">Full name</label><input id="name" name="name" autoComplete="name" className={field} placeholder="Jordan Smith" {...a11y('name')} />{err('name')}</div>
         <div><label className={label} htmlFor="phone">Phone</label><input id="phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" className={field} placeholder="(555) 123-4567" {...a11y('phone')} />{err('phone')}</div>
         <div><label className={label} htmlFor="email">Email</label><input id="email" name="email" type="email" inputMode="email" autoComplete="email" className={field} placeholder="you@example.com" {...a11y('email')} />{err('email')}</div>
-        <div><label className={label} htmlFor="address">Address or neighborhood</label><input id="address" name="address" autoComplete="street-address" className={field} placeholder="123 Maple Street" {...a11y('address')} />{err('address')}</div>
+        <div><label className={label} htmlFor="address">{commercial ? 'Property address' : 'Address or neighborhood'}</label><input id="address" name="address" autoComplete="street-address" className={field} placeholder="123 Maple Street" {...a11y('address')} />{err('address')}</div>
         <div>
-          <label className={label} htmlFor="home">Home type</label>
-          <select id="home" name="home" className={`${field} appearance-none`} defaultValue="Single-story">
-            {['Single-story', 'Two-story', 'Three-story or larger', 'Townhome / condo', 'Not sure'].map((o) => <option key={o} className="bg-navy">{o}</option>)}
+          <label className={label} htmlFor="home">{commercial ? 'Property type' : 'Home type'}</label>
+          <select key={property} id="home" name="home" className={`${field} appearance-none`}>
+            {(commercial ? ['Office', 'Retail / storefront', 'Restaurant / hospitality', 'Medical / professional', 'Multi-unit / HOA', 'Other'] : ['Single-story', 'Two-story', 'Three-story or larger', 'Townhome / condo', 'Not sure']).map((o) => <option key={o} className="bg-navy">{o}</option>)}
           </select>
         </div>
         <div>
@@ -104,7 +122,7 @@ export default function QuoteForm() {
         </div>
         <div className="md:col-span-2">
           <label className={label} htmlFor="message">Anything we should know? <span className="font-medium normal-case tracking-normal text-silver-dim">(optional)</span></label>
-          <textarea id="message" name="message" rows={4} className={`${field} resize-none`} placeholder="Number of windows, problem areas, gate codes, pets…" />
+          <textarea id="message" name="message" rows={4} className={`${field} resize-none`} placeholder="Number of windows, problem areas, access notes, hours…" />
         </div>
       </div>
 

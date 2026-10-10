@@ -1,6 +1,8 @@
 import { pressureService } from '../config/site'
 import { useDocumentTitle } from '../hooks/useMedia'
-import { Headline, Reveal, RevealGroup } from '../components/Reveal'
+import { Headline, Reveal, RevealGroup, ScrubText } from '../components/Reveal'
+import Marquee from '../components/Marquee'
+import OrbSection from '../components/OrbSection'
 import Button from '../components/Button'
 import SectionTitle from '../components/SectionTitle'
 import WashReveal from '../components/WashReveal'
@@ -42,6 +44,17 @@ export default function PressureWashing() {
         </div>
       </section>
 
+      <Marquee className="bg-transparent" words={['Driveways', 'Patios', 'Siding', 'Decks', 'Walkways', 'Parking Areas', 'Residential', 'Commercial']} />
+
+      <section className="bg-midnight py-24 md:py-36">
+        <div className="mx-auto max-w-[1500px] px-5 md:px-10">
+          <ScrubText
+            className="font-display max-w-6xl text-[clamp(1.8rem,4.4vw,4rem)] font-bold leading-[1.08] tracking-[-0.04em]"
+            text="Years of algae, oil and grime disappear in a single pass. The right pressure for every surface, so concrete, pavers and siding look *new* again."
+          />
+        </div>
+      </section>
+
       <section className="bg-midnight pb-28 md:pb-40">
         <div className="mx-auto max-w-[1300px] px-5 md:px-10">
           <Reveal><WashReveal /></Reveal>
@@ -62,6 +75,8 @@ export default function PressureWashing() {
           </RevealGroup>
         </div>
       </section>
+
+      <OrbSection eyebrow="Spotless" title="Every surface,|every *detail*." body="From a family driveway to a commercial parking area, we match pressure and technique to the material so the finish is clean, even and safe." flip cta={{ to: '/contact', label: 'Get a free quote' }} />
 
       <section className="bg-navy py-28 md:py-40">
         <div className="mx-auto max-w-[1500px] px-5 md:px-10">

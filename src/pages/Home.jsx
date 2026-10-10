@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { heroVideo, site } from '../config/site'
 import { gsap } from '../lib/gsap'
-import Scene from '../components/Scene'
+import OrbSection from '../components/OrbSection'
 import Tilt from '../components/Tilt'
 import { useTier } from '../hooks/useTier'
 import { useDocumentTitle, useIsDesktop, useReducedMotion } from '../hooks/useMedia'
@@ -17,7 +17,6 @@ import { TLink } from '../components/Transition'
 import { SceneBoundary, SceneFallback, webglAvailable } from '../components/SceneBoundary'
 
 const HouseScene = lazy(() => import('../three/HouseScene'))
-const GlassOrb = lazy(() => import('../three/GlassOrb'))
 
 function Hero() {
   const desktop = useIsDesktop()
@@ -59,13 +58,13 @@ function Hero() {
       <div ref={content} className="pointer-events-none relative z-10 mx-auto flex min-h-[100svh] max-w-[1500px] flex-col justify-start px-5 pb-[calc(54svh-2rem)] pt-28 md:justify-center md:px-10 md:pb-16 md:pt-24">
         <Reveal y={20} delay={0.1}>
           <p className="inline-flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.35em] text-silver">
-            <span className="h-px w-10 bg-royal-light" /> Residential window & pressure washing
+            <span className="h-px w-10 bg-royal-light" /> Residential & commercial window and pressure washing
           </p>
         </Reveal>
         <Headline text="Your home,|*glowing*|again." className="font-display mt-6 text-[clamp(3.4rem,11vw,9rem)] font-extrabold text-white" />
         <Reveal delay={0.25} className="mt-7 max-w-md">
           <p className="text-[17px] leading-relaxed text-silver md:text-lg">
-            Streak-free glass. Spotless driveways, patios and siding. A young local crew that treats your home like our own.
+            Streak-free glass and spotless exteriors for homes and businesses. A young local crew that treats every property like our own.
           </p>
         </Reveal>
         <Reveal delay={0.35} className="pointer-events-auto mt-8 flex gap-3">
@@ -117,29 +116,6 @@ const SprayVisual = () => (
   </div>
 )
 
-function OrbSection() {
-  const box = useRef(null)
-  const { reduced } = useTier()
-  return (
-    <section className="relative overflow-hidden bg-midnight pb-12 md:pb-24">
-      <div aria-hidden="true" className="absolute inset-0" style={{ background: 'radial-gradient(50% 60% at 75% 50%, rgba(0,122,255,.32), transparent 70%)' }} />
-      <div className="relative mx-auto grid max-w-[1500px] items-center gap-6 px-5 md:px-10 lg:grid-cols-12">
-        <div className="lg:col-span-6">
-          <SectionTitle eyebrow="Crystal clear" title="Every angle,|every *reflection*.">
-            Streak-free glass should look like there is nothing there at all. Move your cursor and scroll. The glass reacts, just like your windows will in the light.
-          </SectionTitle>
-          <Reveal delay={0.15} className="mt-10"><Button to="/window-washing" variant="ghost">See window washing</Button></Reveal>
-        </div>
-        <div ref={box} className="lg:col-span-6">
-          <Scene className="h-[380px] w-full sm:h-[520px]" camera={[0, 0, 9]} fov={34} label="Interactive 3D liquid-glass droplet that rotates as you move your cursor and scroll." minTier="mobile">
-            {({ full }) => <Suspense fallback={null}><GlassOrb full={full} reduced={reduced} container={box} /></Suspense>}
-          </Scene>
-        </div>
-      </div>
-    </section>
-  )
-}
-
 function Home() {
   useDocumentTitle('')
   const reviews = site.reviews || []
@@ -153,13 +129,34 @@ function Home() {
           <Reveal><p className="text-[11px] font-bold uppercase tracking-[0.35em] text-royal-light">Who we are</p></Reveal>
           <ScrubText
             className="font-display mt-8 max-w-6xl text-[clamp(2rem,5.2vw,4.8rem)] font-bold leading-[1.05] tracking-[-0.04em] text-white"
-            text="We are a young, local crew with one obsession: leaving every home brighter, cleaner and *glowing*. Crystal-clear windows. Spotless exteriors. Service you can feel proud of."
+            text="We are a young, local crew with one obsession: leaving every home and business brighter, cleaner and *glowing*. Crystal-clear windows. Spotless exteriors. Service you can feel proud of."
           />
           <Reveal className="mt-12"><Button to="/about" variant="ghost">Meet the team</Button></Reveal>
         </div>
       </section>
 
-      <OrbSection />
+      <OrbSection eyebrow="Crystal clear" title="Every angle,|every *reflection*." body="Streak-free glass should look like there is nothing there at all. Move your cursor and scroll. The glass reacts, just like your windows will in the light." cta={{ to: '/window-washing', label: 'See window washing' }} />
+
+      <section className="relative bg-midnight pb-24 md:pb-36">
+        <div className="mx-auto max-w-[1500px] px-5 md:px-10">
+          <SectionTitle eyebrow="Who we serve" title="Homes and *businesses*,|one standard." />
+          <RevealGroup className="mt-14 grid gap-6 md:grid-cols-2" stagger={0.15}>
+            {[
+              ['Residential', 'Homeowners who want sparkling windows and a spotless driveway, patio and siding, without lifting a finger.', ['Single-family homes', 'Townhomes', 'Condos'], '/contact?type=residential', 'Get a home quote'],
+              ['Commercial', 'Offices, storefronts, property managers and HOAs who need a clean, professional first impression, on a schedule that suits.', ['Offices', 'Retail', 'Property management', 'HOAs'], '/commercial', 'Explore commercial'],
+            ].map(([t, d, tags, to, cta]) => (
+              <Tilt key={t} max={5} className="flex min-h-[340px] flex-col justify-between overflow-hidden rounded-[32px] border border-silver/15 bg-gradient-to-br from-ink to-navy p-8 md:p-10">
+                <div>
+                  <h3 className="font-display text-4xl font-extrabold md:text-5xl">{t}</h3>
+                  <p className="mt-4 max-w-md text-[16px] leading-relaxed text-silver-dim">{d}</p>
+                  <ul className="mt-6 flex flex-wrap gap-2">{tags.map((x) => <li key={x} className="rounded-full border border-silver/20 px-3.5 py-1.5 text-xs font-semibold text-silver">{x}</li>)}</ul>
+                </div>
+                <div className="mt-8"><Button to={to} variant={t === 'Commercial' ? 'primary' : 'ghost'}>{cta}</Button></div>
+              </Tilt>
+            ))}
+          </RevealGroup>
+        </div>
+      </section>
 
       <section className="relative bg-midnight pb-28 md:pb-44">
         <div className="mx-auto max-w-[1500px] px-5 md:px-10">

@@ -7,6 +7,7 @@ import Scene from '../components/Scene'
 import Tilt from '../components/Tilt'
 import TeamCards from '../three/TeamCards'
 import Cta from '../components/Cta'
+import Marquee from '../components/Marquee'
 
 function Portrait({ person }) {
   if (person.photo) return <img src={person.photo} alt={`Portrait of ${person.name}`} className="h-full w-full object-cover" loading="lazy" />
@@ -64,7 +65,9 @@ export default function About() {
         </div>
       </section>
 
-      <section className="bg-midnight pb-28 md:pb-36">
+      <Marquee className="bg-transparent" words={['Community', 'Quality', 'Integrity', 'Prestige', 'Residential', 'Commercial', 'Co-Founders', 'Glow Up']} />
+
+      <section className="bg-midnight py-24 md:py-36">
         <div className="mx-auto max-w-[1500px] px-5 md:px-10">
           <ScrubText
             className="font-display max-w-6xl text-[clamp(1.8rem,4.4vw,4rem)] font-bold leading-[1.08] tracking-[-0.04em]"

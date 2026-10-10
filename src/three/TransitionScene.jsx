@@ -66,28 +66,6 @@ function Frames({ kind, count }) {
   )
 }
 
-function Drops({ count }) {
-  const ref = useRef()
-  useLayoutEffect(() => {
-    const r = rnd(11)
-    const m = new THREE.Matrix4(), q = new THREE.Quaternion(), p = new THREE.Vector3(), s = new THREE.Vector3()
-    for (let i = 0; i < count; i++) {
-      const ang = r() * 6.283, rad = 1.6 + r() * 8
-      p.set(Math.cos(ang) * rad, Math.sin(ang) * rad * 0.65, TUNNEL.near - r() * (TUNNEL.near - TUNNEL.far))
-      const k = 0.12 + r() * 0.5
-      s.set(k, k, k * (1.6 + r() * 2))
-      m.compose(p, q, s); ref.current.setMatrixAt(i, m)
-    }
-    ref.current.instanceMatrix.needsUpdate = true
-  }, [count])
-  return (
-    <instancedMesh ref={ref} args={[null, null, count]} frustumCulled={false}>
-      <icosahedronGeometry args={[1, 2]} />
-      <meshPhysicalMaterial color="#b6dcff" emissive="#007aff" emissiveIntensity={0.7} roughness={0.05} clearcoat={1} transparent opacity={0.85} envMapIntensity={2.5} />
-    </instancedMesh>
-  )
-}
-
 function Rings({ count }) {
   const ref = useRef()
   useLayoutEffect(() => {
@@ -108,6 +86,105 @@ function Rings({ count }) {
       <torusGeometry args={[1, 0.018, 12, 96]} />
       <meshBasicMaterial transparent opacity={0.9} blending={THREE.AdditiveBlending} depthWrite={false} toneMapped={false} />
     </instancedMesh>
+  )
+}
+
+/** Glass shatter: shards explode outward past the camera. */
+function Shatter({ count = 120 }) {
+  const ref = useRef()
+  const geo = useMemo(() => {
+    const g = new THREE.BufferGeometry()
+    g.setAttribute('position', new THREE.Float32BufferAttribute([-0.5, -0.4, 0, 0.55, -0.3, 0, 0.05, 0.6, 0], 3))
+    g.computeVertexNormals(); return g
+  }, [])
+  const shards = useMemo(() => {
+    const r = rnd(21)
+    return Array.from({ length: count }, () => {
+      const x = (r() - 0.5) * 26, y = (r() - 0.5) * 15
+      const d = new THREE.Vector3(x, y, 0).normalize()
+      return { x, y, z: -9 + r() * 4, s: 0.8 + r() * 2.4, dx: d.x * (6 + r() * 14), dy: d.y * (6 + r() * 14), dz: 10 + r() * 26, rx: (r() - 0.5) * 6, ry: (r() - 0.5) * 6, rz: (r() - 0.5) * 6 }
+    })
+  }, [count])
+  const o = useMemo(() => new THREE.Object3D(), [])
+  useFrame(() => {
+    const t = smooth(0.1, 0.8, tx.p)
+    shards.forEach((s2, i) => {
+      o.position.set(s2.x + s2.dx * t, s2.y + s2.dy * t, s2.z + s2.dz * t)
+      o.rotation.set(s2.rx * t, s2.ry * t, s2.rz * t); o.scale.setScalar(s2.s * (1 - t * 0.2)); o.updateMatrix()
+      ref.current.setMatrixAt(i, o.matrix)
+    })
+    ref.current.instanceMatrix.needsUpdate = true
+  })
+  return (
+    <instancedMesh ref={ref} args={[geo, null, count]} frustumCulled={false}>
+      <meshPhysicalMaterial color="#a9d2ff" emissive="#007aff" emissiveIntensity={0.35} transparent opacity={0.42} roughness={0.04} metalness={0.2} clearcoat={1} envMapIntensity={3} side={THREE.DoubleSide} depthWrite={false} />
+    </instancedMesh>
+  )
+}
+
+/** Water ripple: concentric rings expand from the centre, with a splash of droplets. */
+function Ripple({ rings = 14, drops = 70 }) {
+  const rr = useRef(), dd = useRef()
+  const o = useMemo(() => new THREE.Object3D(), [])
+  const c = useMemo(() => new THREE.Color(), [])
+  const dp = useMemo(() => { const r = rnd(33); return Array.from({ length: drops }, () => ({ a: r() * 6.283, v: 2 + r() * 8, u: 4 + r() * 9, s: 0.05 + r() * 0.16 })) }, [drops])
+  useLayoutEffect(() => { for (let i = 0; i < rings; i++) rr.current.setColorAt(i, c.set('#fff')) }, [rings, c])
+  useFrame(() => {
+    const p = tx.p
+    for (let i = 0; i < rings; i++) {
+      const ph = Math.max(0, p * 1.9 - i * 0.075)
+      o.position.set(0, 0, 0); o.rotation.set(0, 0, 0); o.scale.setScalar(Math.max(0.001, ph * 30)); o.updateMatrix()
+      rr.current.setMatrixAt(i, o.matrix)
+      const f = Math.max(0, 1 - ph * 1.1) * (ph > 0 ? 1 : 0)
+      rr.current.setColorAt(i, c.set(i % 3 === 0 ? '#ffffff' : '#2fb8ff').multiplyScalar(f * 1.2))
+    }
+    rr.current.instanceMatrix.needsUpdate = true; rr.current.instanceColor.needsUpdate = true
+    const t = p * 2.6
+    dp.forEach((d, i) => {
+      const life = Math.max(0, t - 0.05)
+      o.position.set(Math.cos(d.a) * d.v * life * 0.6, d.u * life - 6 * life * life + 0.2, Math.sin(d.a) * d.v * life * 0.4)
+      o.scale.setScalar(d.s * Math.max(0, 1 - life * 0.55)); o.updateMatrix(); dd.current.setMatrixAt(i, o.matrix)
+    })
+    dd.current.instanceMatrix.needsUpdate = true
+  })
+  return (
+    <>
+      <instancedMesh ref={rr} args={[null, null, rings]} frustumCulled={false} rotation={[0, 0, 0]}>
+        <torusGeometry args={[1, 0.012, 10, 128]} />
+        <meshBasicMaterial transparent opacity={1} blending={THREE.AdditiveBlending} depthWrite={false} toneMapped={false} />
+      </instancedMesh>
+      <instancedMesh ref={dd} args={[null, null, drops]} frustumCulled={false}>
+        <icosahedronGeometry args={[1, 2]} />
+        <meshPhysicalMaterial color="#d3eaff" emissive="#007aff" emissiveIntensity={0.5} roughness={0.05} clearcoat={1} transparent opacity={0.9} envMapIntensity={2.5} />
+      </instancedMesh>
+    </>
+  )
+}
+
+const BEAM_VERT = 'varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.); }'
+const BEAM_FRAG = 'varying vec2 vUv; uniform float uI; uniform vec3 uC; void main(){ float d=abs(vUv.x-.5)*2.; float core=exp(-d*d*22.); float halo=exp(-d*d*3.2)*.45; gl_FragColor=vec4(uC*(core*1.6+halo)*uI + vec3(core*.9)*uI, (core+halo)*uI); }'
+
+/** Light sweep: bright beams cross the screen, lens-flare style. */
+function Sweep() {
+  const g = useRef()
+  const beams = useMemo(() => [[6, 0, 1, '#4da3ff'], [2.6, -2.4, 1.12, '#ffffff'], [10, 3.5, 0.88, '#007aff'], [1.2, -5, 1.25, '#9cc8ff']].map(([w, o, s2, c]) => ({ w, o, s: s2, r: 0.32, u: { uI: { value: 0 }, uC: { value: new THREE.Color(c) } } })), [])
+  useFrame(() => {
+    const t = Math.min(1, Math.max(0, (tx.p - 0.08) / 0.84))
+    g.current.children.forEach((m, i) => {
+      const b = beams[i]
+      m.position.x = THREE.MathUtils.lerp(-24, 24, Math.min(1, t * b.s)) + b.o
+      beams[i].u.uI.value = Math.sin(Math.min(1, Math.max(0, t * b.s)) * Math.PI) * 1.1
+    })
+  })
+  return (
+    <group ref={g}>
+      {beams.map((b, i) => (
+        <mesh key={i} position={[0, 0, -1]} rotation={[0, 0, b.r]} frustumCulled={false}>
+          <planeGeometry args={[b.w, 60]} />
+          <shaderMaterial args={[{ vertexShader: BEAM_VERT, fragmentShader: BEAM_FRAG, uniforms: b.u, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }]} />
+        </mesh>
+      ))}
+    </group>
   )
 }
 
@@ -161,17 +238,20 @@ function Rig({ kind }) {
     tx.last = p
     group.current.visible = p > 0.001 && p < 0.999
     const e = p
-    camera.position.set(Math.sin(p * 5) * 0.4, Math.cos(p * 4) * 0.25, THREE.MathUtils.lerp(12, -44, e))
-    camera.rotation.z = Math.sin(p * 3.1) * 0.06
+    const fly = kind === 'frames' || kind === 'cards' || kind === 'rings'
+    camera.position.set(fly ? Math.sin(p * 5) * 0.4 : 0, fly ? Math.cos(p * 4) * 0.25 : 0, fly ? THREE.MathUtils.lerp(12, -44, e) : 12)
+    camera.rotation.z = fly ? Math.sin(p * 3.1) * 0.06 : 0
     veilMat.uniforms.uA.value = smooth(0.26, 0.47, p) * (1 - smooth(0.56, 0.8, p))
     veilMat.uniforms.uFlash.value = Math.exp(-Math.pow((p - 0.5) * 7, 2)) * 0.9
   })
   return (
     <group ref={group}>
-      {kind === 'drops' ? <Drops count={70} />
+      {kind === 'shatter' ? <Shatter />
+        : kind === 'ripple' ? <Ripple />
+        : kind === 'sweep' ? <Sweep />
         : kind === 'rings' ? <Rings count={26} />
         : <Frames kind={kind} count={kind === 'cards' ? 16 : 22} />}
-      <Streaks count={140} />
+      {(kind === 'frames' || kind === 'cards' || kind === 'rings') && <Streaks count={140} />}
     </group>
   )
 }

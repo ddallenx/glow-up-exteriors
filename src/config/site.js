@@ -10,7 +10,7 @@
 export const site = {
   name: 'Glow Up Exteriors',
   shortName: 'Glow Up',
-  tagline: 'Residential window washing & pressure washing',
+  tagline: 'Residential & commercial window washing and pressure washing',
 
   // ── CONTACT DETAILS (placeholders — replace with your real info) ──
   phone: '(518) 816-6878',
@@ -48,6 +48,7 @@ export const nav = [
   { to: '/', label: 'Home' },
   { to: '/window-washing', label: 'Window Washing' },
   { to: '/pressure-washing', label: 'Pressure Washing' },
+  { to: '/commercial', label: 'Commercial' },
   { to: '/about', label: 'About' },
   { to: '/contact', label: 'Contact' },
 ]
@@ -71,6 +72,42 @@ export const windowService = {
     ['Do I need to be home?', 'Not for exterior cleaning. As long as we can reach the windows, we can get to work. We will message you when we arrive and when we finish.'],
     ['Will you clean the inside too?', 'Ask us when you request a quote and we will include interior glass in your estimate.'],
     ['What if it rains after you leave?', 'Rain will not undo the work — clean glass sheds water well. If you are unhappy with any pane, tell us and we will make it right.'],
+  ],
+}
+
+export const commercialService = {
+  sectors: [
+    ['Offices & Corporate', 'A clean entrance and spotless glass set the tone before anyone walks in.'],
+    ['Retail & Storefronts', 'Bright windows and clean sidewalks that invite customers inside.'],
+    ['Property Managers & HOAs', 'Reliable, scheduled exterior care across one property or many.'],
+    ['Restaurants & Hospitality', 'Patios, entrances and glass that match the experience you serve.'],
+    ['Medical & Professional Suites', 'A polished, professional first impression for every visitor.'],
+    ['Multi-Unit & Apartments', 'Walkways, entries and windows kept fresh for residents.'],
+  ],
+  includes: [
+    'Storefront, entrance and accessible exterior glass',
+    'Sidewalks, entryways, parking areas and loading zones',
+    'Building exteriors, siding and walls soft-washed or pressure washed',
+    'Patios, dumpster pads and high-traffic concrete',
+    'One-time deep cleans or recurring scheduled service',
+    'Clear communication, tidy crews and a walkthrough after every visit',
+  ],
+  plans: [
+    ['One-time clean', 'A deep reset for a grand opening, listing, inspection or event.'],
+    ['Scheduled service', 'Weekly, monthly or quarterly visits so your property always looks its best.'],
+    ['Seasonal refresh', 'Spring and fall cleans that clear pollen, grime and winter buildup.'],
+  ],
+  steps: [
+    ['Site walkthrough', 'We review your property, access and priorities, in person or by photos.'],
+    ['Custom quote', 'A clear written price for your scope and schedule, with no surprises.'],
+    ['Scheduled service', 'We work around your hours and keep your staff and customers undisturbed.'],
+    ['Walkthrough & report', 'We check the results with you and plan the next visit.'],
+  ],
+  faqs: [
+    ['Do you work around our business hours?', 'Yes. Tell us when you are open and we will plan the visit to stay out of the way of staff and customers.'],
+    ['Can you handle multiple locations?', 'Ask us. We are happy to quote a single property or several locations with one consistent schedule.'],
+    ['Do you offer recurring service?', 'Yes. Many commercial properties choose weekly, monthly or quarterly visits so they never fall behind.'],
+    ['How do I get a commercial quote?', 'Use the quote form and choose Commercial. A short description or a few photos of the property is all we need to start.'],
   ],
 }
 
@@ -135,10 +172,12 @@ export const team = [
 export const heroVideo = { src: '', poster: '' }
 
 /**
- * BEFORE / AFTER PHOTOS
- * Add your own job photos to /public/ba/ and list them here, e.g.
- *   { before: '/ba/window1-before.jpg', after: '/ba/window1-after.jpg', label: 'Front windows' }
- * Photos of the SAME window from the SAME angle work best. While this list is
- * empty, the site shows illustrated examples instead.
+ * BEFORE / AFTER "LIVE PHOTOS"
+ * Add your own media to /public/ba/ and list it here. Two options per item:
+ *   Photos:  { before: '/ba/win1-before.jpg', after: '/ba/win1-after.jpg', label: 'Front windows' }
+ *   Video:   { before: '/ba/win1-poster.jpg', video: '/ba/win1.mp4', label: 'Front windows' }
+ *            (a short muted clip, a few seconds, shot from one spot; the poster is the dirty first frame)
+ * Visitors hover (or press & hold on a phone) to play it like a Live Photo, or switch to a drag slider.
+ * While this list is empty, the site shows illustrated examples instead.
  */
 export const beforeAfter = []

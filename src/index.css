@@ -22,7 +22,6 @@ html.lenis, html.lenis body { height: auto; }
 
 body {
   font-family: var(--font-sans);
-  background: var(--color-midnight);
   color: #fff;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -108,3 +107,7 @@ details > summary::-webkit-details-marker { display: none; }
   .pane-grime { opacity: 0; }
   * { scroll-behavior: auto !important; transition-duration: .01ms !important; }
 }
+
+/* Let the per-page 3D backdrop show through dark sections; light sections stay solid. */
+main section.bg-midnight { background-color: transparent; }
+main section.bg-navy { background-color: rgba(10, 26, 66, 0.6); }

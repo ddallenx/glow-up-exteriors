@@ -6,6 +6,7 @@ import Home from './pages/Home'
 
 const WindowWashing = lazy(() => import('./pages/WindowWashing'))
 const PressureWashing = lazy(() => import('./pages/PressureWashing'))
+const Commercial = lazy(() => import('./pages/Commercial'))
 const About = lazy(() => import('./pages/About'))
 const Contact = lazy(() => import('./pages/Contact'))
 const NotFound = lazy(() => import('./pages/NotFound'))
@@ -19,6 +20,7 @@ export default function App() {
             <Route index element={<Home />} />
             <Route path="window-washing" element={<WindowWashing />} />
             <Route path="pressure-washing" element={<PressureWashing />} />
+            <Route path="commercial" element={<Commercial />} />
             <Route path="about" element={<About />} />
             <Route path="contact" element={<Contact />} />
             <Route path="*" element={<NotFound />} />

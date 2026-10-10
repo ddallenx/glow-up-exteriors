@@ -1,6 +1,6 @@
-const words = ['Window Washing', 'Pressure Washing', 'Streak-Free Glass', 'Driveways', 'Patios', 'Siding', 'Decks', 'Free Quotes']
+const DEFAULT = ['Window Washing', 'Pressure Washing', 'Residential', 'Commercial', 'Streak-Free Glass', 'Driveways', 'Storefronts', 'Free Quotes']
 
-export default function Marquee({ className = '' }) {
+export default function Marquee({ className = '', words = DEFAULT }) {
   const row = (k) => (
     <ul key={k} className="flex shrink-0 items-center" aria-hidden={k > 0 ? 'true' : undefined}>
       {words.map((w) => (
