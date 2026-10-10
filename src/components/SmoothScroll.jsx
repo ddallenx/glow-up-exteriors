@@ -2,12 +2,13 @@ import { useEffect } from 'react'
 import Lenis from 'lenis'
 import { gsap, ScrollTrigger } from '../lib/gsap'
 import { setLenis } from '../lib/scroll'
-import { useReducedMotion } from '../hooks/useMedia'
+import { useFinePointer, useReducedMotion } from '../hooks/useMedia'
 
 export default function SmoothScroll() {
   const reduced = useReducedMotion()
+  const fine = useFinePointer()
   useEffect(() => {
-    if (reduced) return
+    if (reduced || !fine) return
     const lenis = new Lenis({ duration: 1.15, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), smoothWheel: true })
     setLenis(lenis)
     lenis.on('scroll', ScrollTrigger.update)
@@ -19,6 +20,6 @@ export default function SmoothScroll() {
       lenis.destroy()
       setLenis(null)
     }
-  }, [reduced])
+  }, [reduced, fine])
   return null
 }

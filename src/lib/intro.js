@@ -11,6 +11,7 @@ export const introWanted =
   typeof window !== 'undefined' &&
   !window.matchMedia('(prefers-reduced-motion: reduce)').matches &&
   webglOk() &&
+  window.matchMedia('(min-width: 1024px) and (hover: hover)').matches &&
   !weak() &&
   !safe(() => sessionStorage.getItem(KEY), false) &&
   !window.location.search.includes('nointro')

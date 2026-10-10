@@ -20,7 +20,7 @@ export function TransitionProvider({ children }) {
   const { pathname } = useLocation()
   const reduced = useReducedMotion()
   const { tier } = useTier()
-  const use3d = tier === 'full' || tier === 'mobile'
+  const use3d = tier === 'full'
   const [mount3d, setMount3d] = useState(false)
   const [active, setActive] = useState(false)
   const [kind, setKind] = useState('frames')
@@ -73,8 +73,8 @@ export function TransitionProvider({ children }) {
     setActive(true)
     if (label3d.current) label3d.current.textContent = LABEL[target] || ''
     requestAnimationFrame(() => {
-      gsap.timeline({ onComplete: () => { setActive(false); tx.p = 0; busy.current = false; pageState.delay = 0.1; gsap.set('#main', { clearProps: 'all' }) } })
-        .to('#main', { scale: 0.84, opacity: 0.15, rotateX: 8, z: -280, filter: 'blur(10px) brightness(0.7)', transformPerspective: 1400, transformOrigin: '50% 40%', duration: 1.1, ease: 'power3.in' }, 0)
+      gsap.timeline({ onComplete: () => { setActive(false); tx.p = 0; busy.current = false; pageState.delay = 0.1; gsap.set('#main', { clearProps: 'all' }); requestAnimationFrame(() => ScrollTrigger.refresh()) } })
+        .to('#main', { scale: 0.84, opacity: 0.15, rotateX: 8, z: -280, filter: 'blur(8px)', transformPerspective: 1400, transformOrigin: '50% 40%', duration: 1.1, ease: 'power3.in' }, 0)
         .to(tx, { p: 0.5, duration: 1.1, ease: 'power3.in' }, 0)
         .to('[data-tx-label]', { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: 'power3.out' }, 0.55)
         .add(() => {
@@ -82,8 +82,8 @@ export function TransitionProvider({ children }) {
           navigate(to)
           scrollToTop()
           requestAnimationFrame(() => {
-            gsap.set('#main', { scale: 1.16, opacity: 0, rotateX: -7, z: 260, filter: 'blur(14px) brightness(1.5)', transformPerspective: 1400, transformOrigin: '50% 40%' })
-            gsap.to('#main', { scale: 1, opacity: 1, rotateX: 0, z: 0, filter: 'blur(0px) brightness(1)', duration: 1.7, ease: 'expo.out', delay: 0.25 })
+            gsap.set('#main', { scale: 1.16, opacity: 0, rotateX: -7, z: 260, filter: 'blur(10px)', transformPerspective: 1400, transformOrigin: '50% 40%' })
+            gsap.to('#main', { scale: 1, opacity: 1, rotateX: 0, z: 0, filter: 'blur(0px)', duration: 1.7, ease: 'expo.out', delay: 0.25 })
             ScrollTrigger.refresh()
           })
         })
@@ -113,7 +113,7 @@ export function TransitionProvider({ children }) {
       busy.current = true
       gsap.set(root.current, { display: 'block' })
       gsap
-        .timeline({ onComplete: () => { gsap.set(root.current, { display: 'none' }); busy.current = false; pageState.delay = 0.1 } })
+        .timeline({ onComplete: () => { gsap.set(root.current, { display: 'none' }); busy.current = false; pageState.delay = 0.1; requestAnimationFrame(() => ScrollTrigger.refresh()) } })
         .fromTo(panels(), { yPercent: 100 }, { yPercent: 0, duration: 0.7, ease: 'expo.inOut', stagger: 0.06 })
         .fromTo('[data-curtain-logo]', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' }, '-=0.35')
         .add(() => {

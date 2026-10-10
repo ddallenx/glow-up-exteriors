@@ -6,6 +6,7 @@ import { ToneMappingMode } from 'postprocessing'
 import * as THREE from 'three'
 import { gsap } from '../lib/gsap'
 import House from './House'
+import Throttle from './Throttle'
 import Water from './Water'
 
 const HORIZON = '#c9b6bd'
@@ -44,9 +45,9 @@ function Rig({ desktop, reduced }) {
 }
 
 /** Golden-hour image-based lighting: warm low sun panel, cool sky dome, bounce from the lawn. */
-function Studio() {
+function Studio({ desktop }) {
   return (
-    <Environment resolution={256} frames={1}>
+    <Environment resolution={desktop ? 256 : 96} frames={1}>
       <Lightformer form="rect" intensity={6} position={[-14, 5, 10]} rotation-y={Math.PI / 2.6} scale={[8, 5, 1]} color="#ffb877" />
       <Lightformer form="rect" intensity={1.6} position={[0, 12, 0]} rotation-x={Math.PI / 2} scale={[30, 30, 1]} color="#8fb2ff" />
       <Lightformer form="rect" intensity={1.2} position={[14, 4, 6]} rotation-y={-Math.PI / 2} scale={[14, 5, 1]} color="#9db8f0" />
@@ -59,7 +60,7 @@ function Studio() {
 export default function HouseScene({ desktop, reduced }) {
   const wrap = useRef(null)
   const [visible, setVisible] = useState(true)
-  const [dpr, setDpr] = useState(desktop ? 1.75 : 1.4)
+  const [dpr, setDpr] = useState(desktop ? 1.75 : 1.2)
 
   useEffect(() => {
     const io = new IntersectionObserver(([e]) => setVisible(e.isIntersecting), { threshold: 0 })
@@ -72,13 +73,14 @@ export default function HouseScene({ desktop, reduced }) {
       <Canvas
         shadows
         dpr={[1, dpr]}
-        frameloop={visible ? 'always' : 'never'}
+        frameloop={!visible ? 'never' : desktop ? 'always' : 'demand'}
         camera={{ fov: desktop ? 30 : 36, near: 0.1, far: 300, position: [14, 9, 18] }}
         gl={{ antialias: !desktop, powerPreference: 'high-performance' }}
         style={{ touchAction: 'pan-y' }}
         onCreated={({ gl }) => { gl.toneMapping = THREE.ACESFilmicToneMapping; gl.toneMappingExposure = 1 }}
       >
         <PerformanceMonitor onDecline={() => setDpr(1)} />
+        {!desktop && <Throttle fps={30} />}
         <fog attach="fog" args={[HORIZON, 38, 105]} />
         <Rig desktop={desktop} reduced={reduced} />
         <Sky distance={200} sunPosition={SUN.toArray()} turbidity={8} rayleigh={2.2} mieCoefficient={0.006} mieDirectionalG={0.85} />
@@ -86,13 +88,13 @@ export default function HouseScene({ desktop, reduced }) {
         <hemisphereLight args={['#9db8ff', '#4c6a3a', 0.8]} />
         <directionalLight
           position={SUN.toArray()} intensity={5.2} color="#ffb77a" castShadow
-          shadow-mapSize={desktop ? [2048, 2048] : [1024, 1024]}
+          shadow-mapSize={desktop ? [2048, 2048] : [512, 512]}
           shadow-camera-left={-16} shadow-camera-right={16} shadow-camera-top={14} shadow-camera-bottom={-8} shadow-camera-near={5} shadow-camera-far={90}
           shadow-bias={-0.0003} shadow-normalBias={0.04} shadow-radius={4}
         />
 
         <Suspense fallback={null}>
-          <Studio />
+          <Studio desktop={desktop} />
           <House desktop={desktop} reduced={reduced} />
           <Water ambient={desktop ? 90 : 45} spray={desktop ? 200 : 110} reduced={reduced} />
         </Suspense>

@@ -53,8 +53,9 @@ function GlassWindow({ position, rotation = [0, 0, 0], size, cols = 1, seed = 0,
   )
 }
 
-function Foliage({ count = 220, rx = 1.3, ry = 1.05, rz = 1.3, base = '#22492f', seed = 1 }) {
+function Foliage({ count = 220, light = false, rx = 1.3, ry = 1.05, rz = 1.3, base = '#22492f', seed = 1 }) {
   const ref = useRef()
+  count = light ? Math.round(count * 0.4) : count
   useLayoutEffect(() => {
     let s = seed * 9301
     const rnd = () => { s = (s * 16807) % 2147483647; return (s % 10000) / 10000 }
@@ -81,19 +82,19 @@ function Foliage({ count = 220, rx = 1.3, ry = 1.05, rz = 1.3, base = '#22492f',
   )
 }
 
-function Tree({ position, s = 1, seed = 1, base }) {
+function Tree({ position, s = 1, seed = 1, base, light }) {
   return (
     <group position={position} scale={s}>
       <mesh position={[0, 1.2, 0]} castShadow><cylinderGeometry args={[0.09, 0.16, 2.4, 10]} /><meshStandardMaterial color="#3a2f2a" roughness={1} /></mesh>
-      <group position={[0, 3.2, 0]}><Foliage seed={seed} base={base} /></group>
+      <group position={[0, 3.2, 0]}><Foliage seed={seed} base={base} light={light} /></group>
     </group>
   )
 }
 
-function Shrub({ position, s = 1, seed = 3 }) {
+function Shrub({ position, s = 1, seed = 3, light }) {
   return (
     <group position={position} scale={s}>
-      <Foliage count={70} rx={0.7} ry={0.5} rz={0.65} base="#2a5a3a" seed={seed} />
+      <Foliage count={70} rx={0.7} ry={0.5} rz={0.65} base="#2a5a3a" seed={seed} light={light} />
     </group>
   )
 }
@@ -227,9 +228,9 @@ export default function House({ reduced = false, desktop = true }) {
       <RoundedBox args={[3.4, 0.6, 0.55]} radius={0.25} smoothness={4} position={[-2.4, 0.4, 3.0]} castShadow={sh} receiveShadow={sh}>
         <meshStandardMaterial color="#244d33" roughness={1} bumpMap={m.grass.bump} bumpScale={4} />
       </RoundedBox>
-      <Shrub position={[2.2, 0.35, 3.05]} s={0.9} seed={2} />
-      <Shrub position={[3.0, 0.3, 3.2]} s={0.7} seed={5} />
-      <Shrub position={[-4.7, 0.4, 2.7]} s={1.1} seed={7} />
+      <Shrub position={[2.2, 0.35, 3.05]} s={0.9} seed={2} light={!desktop} />
+      <Shrub position={[3.0, 0.3, 3.2]} s={0.7} seed={5} light={!desktop} />
+      <Shrub position={[-4.7, 0.4, 2.7]} s={1.1} seed={7} light={!desktop} />
 
       {/* paver patio + path */}
       <mesh position={[-0.5, 0.03, 4.7]} receiveShadow={sh} rotation={[-Math.PI / 2, 0, 0]}>
@@ -246,12 +247,16 @@ export default function House({ reduced = false, desktop = true }) {
       </mesh>
 
       {/* trees: foreground + a backdrop line */}
-      <Tree position={[10.6, 0, 1.0]} s={1.1} seed={4} />
-      <Tree position={[-8.2, 0, -0.6]} s={1.25} seed={9} base="#1f4630" />
-      <Tree position={[-3, 0, -9]} s={1.8} seed={12} base="#1d4430" />
-      <Tree position={[4, 0, -10]} s={2.0} seed={15} base="#255236" />
-      <Tree position={[11, 0, -6]} s={1.7} seed={18} base="#1f4a31" />
-      <Tree position={[-11, 0, -5]} s={1.9} seed={21} base="#214d33" />
+      <Tree position={[10.6, 0, 1.0]} s={1.1} seed={4} light={!desktop} />
+      <Tree position={[-8.2, 0, -0.6]} s={1.25} seed={9} base="#1f4630" light={!desktop} />
+      {desktop && (
+        <>
+          <Tree position={[-3, 0, -9]} s={1.8} seed={12} base="#1d4430" />
+          <Tree position={[4, 0, -10]} s={2.0} seed={15} base="#255236" />
+          <Tree position={[11, 0, -6]} s={1.7} seed={18} base="#1f4a31" />
+          <Tree position={[-11, 0, -5]} s={1.9} seed={21} base="#214d33" />
+        </>
+      )}
 
       <PathLight position={[-0.4, 0, 6.5]} />
       <PathLight position={[1.1, 0, 8.3]} />

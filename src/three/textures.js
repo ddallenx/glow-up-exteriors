@@ -15,19 +15,25 @@ function noiseField(size, cells, seed) {
   }
 }
 
+const LOW = typeof window !== 'undefined' && window.innerWidth < 1024
+const Q = LOW ? 0.5 : 1
+
 const make = (w, h, draw, { srgb = true, repeat = null, aniso = 8 } = {}) => {
   const c = document.createElement('canvas')
-  c.width = w; c.height = h
-  draw(c.getContext('2d', { willReadFrequently: true }), w, h)
+  c.width = Math.round(w * Q); c.height = Math.round(h * Q)
+  const g = c.getContext('2d', { willReadFrequently: true })
+  g.scale(Q, Q)
+  draw(g, w, h)
   const t = new THREE.CanvasTexture(c)
   if (srgb) t.colorSpace = THREE.SRGBColorSpace
-  t.anisotropy = aniso
+  t.anisotropy = LOW ? 2 : aniso
   if (repeat) { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(repeat[0], repeat[1]) }
   return t
 }
 
 /** multi-octave grayscale noise pass over an existing canvas context */
-function overlayNoise(g, w, h, seed, { amount = 0.12, scale = 24, octaves = 3, tint = [255, 255, 255], dark = false } = {}) {
+function overlayNoise(g, lw, lh, seed, { amount = 0.12, scale = 24, octaves = 3, tint = [255, 255, 255], dark = false } = {}) {
+  const w = g.canvas.width, h = g.canvas.height
   const img = g.getImageData(0, 0, w, h)
   const fields = Array.from({ length: octaves }, (_, o) => noiseField(w, Math.max(2, Math.round(scale * 2 ** o)), seed + o * 17))
   const d = img.data

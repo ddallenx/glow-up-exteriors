@@ -28,14 +28,14 @@ function Hero() {
 
   // Scroll-driven depth: copy drifts up and fades, the 3D stage pushes in.
   useEffect(() => {
-    if (reduced) return
+    if (reduced || !desktop) return
     const ctx = gsap.context(() => {
       const st = { trigger: hero.current, start: 'top top', end: 'bottom 20%', scrub: true }
       gsap.to(content.current, { yPercent: -14, opacity: 0, ease: 'none', scrollTrigger: st })
       gsap.to(stage.current, { scale: 1.12, ease: 'none', scrollTrigger: st })
     }, hero)
     return () => ctx.revert()
-  }, [reduced])
+  }, [reduced, desktop])
 
   return (
     <section ref={hero} className="relative isolate min-h-[100svh] overflow-hidden bg-midnight">

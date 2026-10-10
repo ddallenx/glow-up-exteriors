@@ -18,7 +18,7 @@ export default function PageBackdrop() {
   const { pathname } = useLocation()
   const { tier, full, reduced } = useTier()
   const kind = KIND[pathname]
-  if (!kind || tier === 'off' || tier === 'lite') return null
+  if (!kind || tier !== 'full') return null
   return (
     <div aria-hidden="true" className={`pointer-events-none fixed inset-0 -z-10 ${kind === 'city' ? 'bg-midnight/50' : 'bg-midnight/15'}`}>
       <SceneBoundary fallback={null}>
