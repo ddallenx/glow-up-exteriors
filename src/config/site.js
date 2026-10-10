@@ -97,33 +97,42 @@ export const pressureService = {
   ],
 }
 
-// All three of you are founders. Swap `photo` for a path like '/team/divine.jpg' (put the file in /public/team)
+// Divine, Jeremy and Colin are three equal co-founders — keep all entries in the same format.
+// Swap `photo` for a path like '/team/divine.jpg' (put the file in /public/team)
 export const team = [
   {
     name: 'Divine',
     age: 19,
     role: 'Co-Founder',
-    focus: 'Community first',
+    focus: 'Community, service, meaning',
     photo: '',
-    bio: 'Divine co-founded Glow Up Exteriors at nineteen with a simple belief: a clean home lifts everyone around it. Passionate about helping the community, Divine brings energy, care and a refusal to cut corners to every job.',
+    bio: 'Passionate about helping the community, providing exceptional service and building something meaningful. Divine co-founded Glow Up Exteriors so every neighbor could take pride in their home.',
   },
   {
     name: 'Jeremy',
     age: 20,
     role: 'Co-Founder',
-    focus: 'Better homes, friendlier streets',
+    focus: 'Friendlier homes, fuller potential',
     photo: '',
-    bio: 'At twenty, Jeremy is focused on improving homes and creating a friendlier environment — for customers and neighbors alike. He brings a hands-on eye for detail and a warm, easygoing way with everyone he meets.',
+    bio: 'Focused on creating a friendlier environment, improving homes and helping properties reach their full potential. Jeremy brings a hands-on eye for detail and a warm way with everyone he meets.',
   },
   {
     name: 'Colin',
-    age: null,
+    age: 21,
     role: 'Co-Founder',
-    focus: 'Prestige in every job',
+    focus: 'Prestige, quality, respect',
     photo: '',
-    bio: 'Colin is dedicated to prestigious service and building an excellent company. He holds every job to a high standard, from the first quote to the final walkthrough, so that Glow Up becomes a name people trust.',
+    bio: 'Dedicated to providing prestigious, high-quality services and building a respected, successful business. Colin holds every job to a high standard, from the first quote to the final walkthrough.',
   },
 ]
+
+/**
+ * HERO VIDEO (optional)
+ * Have your own footage? Put an .mp4 (under ~6 MB, 1080p, no sound needed) in /public/video/
+ * and set src: '/video/hero.mp4' (and an optional poster image). The homepage hero then plays
+ * your video behind the headline. Leave src empty to keep the interactive 3D house.
+ */
+export const heroVideo = { src: '', poster: '' }
 
 /**
  * BEFORE / AFTER PHOTOS

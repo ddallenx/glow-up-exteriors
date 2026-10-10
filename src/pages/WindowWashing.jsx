@@ -4,6 +4,9 @@ import { Headline, Reveal, RevealGroup } from '../components/Reveal'
 import Button from '../components/Button'
 import SectionTitle from '../components/SectionTitle'
 import AnimatedWindows from '../components/AnimatedWindows'
+import Scene from '../components/Scene'
+import WindowWall from '../three/WindowWall'
+import { useReducedMotion } from '../hooks/useMedia'
 import WindowCompare from '../components/WindowCompare'
 import Steps from '../components/Steps'
 import Faq from '../components/Faq'
@@ -11,10 +14,11 @@ import Cta from '../components/Cta'
 
 export default function WindowWashing() {
   useDocumentTitle('Window Washing')
+  const reduced = useReducedMotion()
   return (
     <>
       <section className="relative isolate overflow-hidden bg-midnight pb-24 pt-36 md:pb-36 md:pt-44">
-        <div aria-hidden="true" className="absolute inset-0 -z-10" style={{ background: 'radial-gradient(50% 60% at 85% 20%, rgba(63,114,255,.35), transparent 70%)' }} />
+        <div aria-hidden="true" className="absolute inset-0 -z-10" style={{ background: 'radial-gradient(55% 65% at 80% 30%, rgba(0,122,255,.45), transparent 70%), radial-gradient(30% 40% at 10% 90%, rgba(47,184,255,.18), transparent 70%)' }} />
         <div className="mx-auto grid max-w-[1500px] items-center gap-14 px-5 md:px-10 lg:grid-cols-2">
           <div>
             <Reveal><p className="text-[11px] font-bold uppercase tracking-[0.35em] text-royal-light">Service 01</p></Reveal>
@@ -22,7 +26,11 @@ export default function WindowWashing() {
             <Reveal delay={0.2}><p className="mt-8 max-w-lg text-lg leading-relaxed text-silver">Professional residential window washing that removes dirt, pollen, hard-water spots and haze, so your home lets in more light and looks sharper from the curb.</p></Reveal>
             <Reveal delay={0.3} className="mt-9 flex flex-col gap-3 sm:flex-row"><Button to="/contact">Free window quote</Button><Button href="#compare" variant="ghost" arrow={false}>See the difference</Button></Reveal>
           </div>
-          <Reveal y={60}><AnimatedWindows /></Reveal>
+          <Reveal y={60}>
+            <Scene className="aspect-[1/1] w-full sm:aspect-[6/5]" camera={[0, 0, 8.4]} fov={36} label="Interactive 3D wall of windows being squeegeed clean. Move your cursor to catch the light." fallback={<AnimatedWindows />}>
+              {({ full }) => <WindowWall reduced={reduced} full={full} />}
+            </Scene>
+          </Reveal>
         </div>
       </section>
 

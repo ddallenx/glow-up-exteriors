@@ -3,6 +3,9 @@ import { site } from '../config/site'
 import { useDocumentTitle } from '../hooks/useMedia'
 import { Headline, Reveal } from '../components/Reveal'
 import QuoteForm from '../components/QuoteForm'
+import Scene from '../components/Scene'
+import GlassOrb from '../three/GlassOrb'
+import { useTier } from '../hooks/useTier'
 
 const digits = (s) => s.replace(/[^\d+]/g, '')
 
@@ -24,9 +27,15 @@ function Row({ label, value, href, copy }) {
 
 export default function Contact() {
   useDocumentTitle('Free Quote')
+  const { reduced } = useTier()
   return (
     <section className="relative isolate overflow-hidden bg-midnight pb-28 pt-36 md:pb-40 md:pt-44">
-      <div aria-hidden="true" className="absolute inset-0 -z-10" style={{ background: 'radial-gradient(50% 50% at 90% 10%, rgba(63,114,255,.35), transparent 70%), radial-gradient(40% 40% at 0% 100%, rgba(142,170,255,.15), transparent 70%)' }} />
+      <div aria-hidden="true" className="absolute inset-0 -z-10" style={{ background: 'radial-gradient(50% 50% at 90% 10%, rgba(0,122,255,.35), transparent 70%), radial-gradient(40% 40% at 0% 100%, rgba(77,163,255,.15), transparent 70%)' }} />
+      <div aria-hidden="true" className="pointer-events-none absolute right-[-60px] top-16 -z-[5] h-[320px] w-[320px] opacity-50 sm:opacity-90 sm:h-[460px] sm:w-[460px] lg:right-[2%] lg:top-16 lg:h-[450px] lg:w-[450px]">
+        <Scene className="h-full w-full" camera={[0, 0, 9]} fov={34} label="" minTier="mobile">
+          {({ full }) => <GlassOrb full={full} reduced={reduced} calm />}
+        </Scene>
+      </div>
       <div className="mx-auto max-w-[1500px] px-5 md:px-10">
         <Reveal><p className="text-[11px] font-bold uppercase tracking-[0.35em] text-royal-light">Contact</p></Reveal>
         <Headline text="Let us give you|a free *quote*." className="font-display mt-6 text-[clamp(3rem,9vw,9rem)] font-extrabold" />

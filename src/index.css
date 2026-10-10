@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
 @theme {
-  --color-midnight: #071634;
-  --color-navy: #0e2150;
-  --color-ink: #16306a;
-  --color-royal: #3f72ff;
-  --color-royal-light: #8eaaff;
-  --color-royal-deep: #2a54e6;
+  --color-midnight: #050d24;
+  --color-navy: #0a1a42;
+  --color-ink: #12296a;
+  --color-royal: #007aff;
+  --color-royal-light: #6cb2ff;
+  --color-royal-deep: #0058d6;
   --color-silver: #c3cad8;
   --color-silver-dim: #8b95ab;
   --color-mist: #eef2fb;
@@ -45,7 +45,7 @@ body {
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 .text-royal-grad {
-  background: linear-gradient(120deg, #b0c4ff 0%, #7b9dff 50%, #3f72ff 100%);
+  background: linear-gradient(120deg, #a6ceff 0%, #4da3ff 50%, #007aff 100%);
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 

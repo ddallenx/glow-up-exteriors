@@ -1,5 +1,9 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
-import { site } from '../config/site'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import { heroVideo, site } from '../config/site'
+import { gsap } from '../lib/gsap'
+import Scene from '../components/Scene'
+import Tilt from '../components/Tilt'
+import { useTier } from '../hooks/useTier'
 import { useDocumentTitle, useIsDesktop, useReducedMotion } from '../hooks/useMedia'
 import { Headline, Reveal, RevealGroup, ScrubText } from '../components/Reveal'
 import Button from '../components/Button'
@@ -13,17 +17,32 @@ import { TLink } from '../components/Transition'
 import { SceneBoundary, SceneFallback, webglAvailable } from '../components/SceneBoundary'
 
 const HouseScene = lazy(() => import('../three/HouseScene'))
+const GlassOrb = lazy(() => import('../three/GlassOrb'))
 
 function Hero() {
   const desktop = useIsDesktop()
   const reduced = useReducedMotion()
   const [gl, setGl] = useState(true)
+  const hero = useRef(null), content = useRef(null), stage = useRef(null)
   useEffect(() => setGl(webglAvailable()), [])
 
+  // Scroll-driven depth: copy drifts up and fades, the 3D stage pushes in.
+  useEffect(() => {
+    if (reduced) return
+    const ctx = gsap.context(() => {
+      const st = { trigger: hero.current, start: 'top top', end: 'bottom 20%', scrub: true }
+      gsap.to(content.current, { yPercent: -14, opacity: 0, ease: 'none', scrollTrigger: st })
+      gsap.to(stage.current, { scale: 1.12, ease: 'none', scrollTrigger: st })
+    }, hero)
+    return () => ctx.revert()
+  }, [reduced])
+
   return (
-    <section className="relative isolate min-h-[100svh] overflow-hidden bg-midnight">
-      <div className="absolute inset-x-0 bottom-0 h-[54svh] [mask-image:linear-gradient(to_bottom,transparent,black_22%)] md:inset-0 md:h-auto md:[mask-image:none]">
-        {gl ? (
+    <section ref={hero} className="relative isolate min-h-[100svh] overflow-hidden bg-midnight">
+      <div ref={stage} className="absolute inset-x-0 bottom-0 h-[54svh] [mask-image:linear-gradient(to_bottom,transparent,black_22%)] md:inset-0 md:h-auto md:[mask-image:none]">
+        {heroVideo.src ? (
+          <video className="absolute inset-0 h-full w-full object-cover" src={heroVideo.src} poster={heroVideo.poster || undefined} autoPlay muted loop playsInline preload="metadata" aria-hidden="true" />
+        ) : gl ? (
           <SceneBoundary>
             <Suspense fallback={<SceneFallback />}>
               <HouseScene desktop={desktop} reduced={reduced} />
@@ -32,11 +51,12 @@ function Hero() {
         ) : <SceneFallback />}
       </div>
       {/* readability gradients */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,#071634_0%,rgba(7,22,52,.85)_30%,rgba(7,22,52,0)_52%)] md:bg-[linear-gradient(90deg,rgba(7,22,52,.92)_0%,rgba(7,22,52,.55)_36%,rgba(7,22,52,0)_62%)]" />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,#050d24_0%,rgba(5,13,36,.85)_30%,rgba(5,13,36,0)_52%)] md:bg-[linear-gradient(90deg,rgba(5,13,36,.92)_0%,rgba(5,13,36,.55)_36%,rgba(5,13,36,0)_62%)]" />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 mix-blend-screen" style={{ background: 'radial-gradient(45% 55% at 78% 62%, rgba(0,122,255,.22), transparent 70%)' }} />
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-44 bg-gradient-to-b from-midnight/85 to-transparent" />
-      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-midnight to-transparent" />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-midnight via-midnight/70 to-transparent" />
 
-      <div className="pointer-events-none relative z-10 mx-auto flex min-h-[100svh] max-w-[1500px] flex-col justify-start px-5 pb-[calc(54svh-2rem)] pt-28 md:justify-center md:px-10 md:pb-16 md:pt-24">
+      <div ref={content} className="pointer-events-none relative z-10 mx-auto flex min-h-[100svh] max-w-[1500px] flex-col justify-start px-5 pb-[calc(54svh-2rem)] pt-28 md:justify-center md:px-10 md:pb-16 md:pt-24">
         <Reveal y={20} delay={0.1}>
           <p className="inline-flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.35em] text-silver">
             <span className="h-px w-10 bg-royal-light" /> Residential window & pressure washing
@@ -67,7 +87,7 @@ function Hero() {
 
 function ServiceCard({ to, index, title, blurb, items, visual }) {
   return (
-    <TLink to={to} className="group relative flex min-h-[560px] flex-col justify-between overflow-hidden rounded-[32px] border border-silver/15 bg-gradient-to-b from-ink to-navy p-7 transition-transform duration-700 hover:-translate-y-2 md:p-10">
+    <TLink to={to} className="group block [perspective:1200px]"><Tilt max={6} className="relative flex min-h-[560px] flex-col justify-between overflow-hidden rounded-[32px] border border-silver/15 bg-gradient-to-b from-ink to-navy p-7 md:p-10" glare>
       <div aria-hidden="true" className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-royal/25 blur-[90px] transition-all duration-700 group-hover:bg-royal/45" />
       <div className="relative">
         <div className="flex items-center justify-between">
@@ -78,24 +98,47 @@ function ServiceCard({ to, index, title, blurb, items, visual }) {
         </div>
         <div className="mt-8 h-44 overflow-hidden rounded-2xl">{visual}</div>
       </div>
-      <div className="relative mt-10">
+      <div className="relative mt-10 [transform:translateZ(40px)]">
         <h3 className="font-display text-4xl font-extrabold md:text-5xl">{title}</h3>
         <p className="mt-4 max-w-md text-[16px] leading-relaxed text-silver-dim">{blurb}</p>
         <ul className="mt-6 flex flex-wrap gap-2">
           {items.map((i) => <li key={i} className="rounded-full border border-silver/20 px-3.5 py-1.5 text-xs font-semibold text-silver">{i}</li>)}
         </ul>
       </div>
-    </TLink>
+    </Tilt></TLink>
   )
 }
 
 const SprayVisual = () => (
-  <div className="relative h-full w-full bg-gradient-to-b from-[#1c3470] to-[#0f2150]">
+  <div className="relative h-full w-full bg-gradient-to-b from-[#10306e] to-[#0a1d4a]">
     <div className="absolute inset-0 opacity-90" style={{ background: 'repeating-linear-gradient(90deg, #7d879c 0 58px, #4d5348 58px 62px)' }} />
     <div className="pane-grime absolute inset-0" style={{ '--dur': '6s', background: 'radial-gradient(circle at 30% 40%, rgba(40,48,34,.9), rgba(40,46,32,.85))' }} />
     <div className="pane-squeegee absolute inset-y-0 w-10 -translate-x-1/2" style={{ '--dur': '6s', background: 'linear-gradient(90deg, transparent, rgba(190,210,255,.9), transparent)', filter: 'blur(6px)' }} />
   </div>
 )
+
+function OrbSection() {
+  const box = useRef(null)
+  const { reduced } = useTier()
+  return (
+    <section className="relative overflow-hidden bg-midnight pb-12 md:pb-24">
+      <div aria-hidden="true" className="absolute inset-0" style={{ background: 'radial-gradient(50% 60% at 75% 50%, rgba(0,122,255,.32), transparent 70%)' }} />
+      <div className="relative mx-auto grid max-w-[1500px] items-center gap-6 px-5 md:px-10 lg:grid-cols-12">
+        <div className="lg:col-span-6">
+          <SectionTitle eyebrow="Crystal clear" title="Every angle,|every *reflection*.">
+            Streak-free glass should look like there is nothing there at all. Move your cursor and scroll. The glass reacts, just like your windows will in the light.
+          </SectionTitle>
+          <Reveal delay={0.15} className="mt-10"><Button to="/window-washing" variant="ghost">See window washing</Button></Reveal>
+        </div>
+        <div ref={box} className="lg:col-span-6">
+          <Scene className="h-[380px] w-full sm:h-[520px]" camera={[0, 0, 9]} fov={34} label="Interactive 3D liquid-glass droplet that rotates as you move your cursor and scroll." minTier="mobile">
+            {({ full }) => <Suspense fallback={null}><GlassOrb full={full} reduced={reduced} container={box} /></Suspense>}
+          </Scene>
+        </div>
+      </div>
+    </section>
+  )
+}
 
 function Home() {
   useDocumentTitle('')
@@ -115,6 +158,8 @@ function Home() {
           <Reveal className="mt-12"><Button to="/about" variant="ghost">Meet the team</Button></Reveal>
         </div>
       </section>
+
+      <OrbSection />
 
       <section className="relative bg-midnight pb-28 md:pb-44">
         <div className="mx-auto max-w-[1500px] px-5 md:px-10">
