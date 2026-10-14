@@ -16,66 +16,57 @@ import Steps from '../components/Steps'
 import Cta from '../components/Cta'
 import { TLink } from '../components/Transition'
 
-/** First screen: the three co-founders and the truck, full-bleed, with the offer beside them. */
+/** First screen: a glowing Glow Up logo behind the headline. Pure CSS, so it is light on every device. */
 function Hero() {
   const desktop = useIsDesktop()
   const reduced = useReducedMotion()
-  const hero = useRef(null), content = useRef(null), photo = useRef(null)
+  const hero = useRef(null), content = useRef(null), mark = useRef(null)
 
   useEffect(() => {
     if (reduced || !desktop) return
     const ctx = gsap.context(() => {
       const st = { trigger: hero.current, start: 'top top', end: 'bottom 15%', scrub: true }
-      gsap.to(content.current, { yPercent: -12, opacity: 0, ease: 'none', scrollTrigger: st })
-      gsap.to(photo.current, { yPercent: 8, scale: 1.08, ease: 'none', scrollTrigger: st })
+      gsap.to(content.current, { yPercent: -10, opacity: 0, ease: 'none', scrollTrigger: st })
+      gsap.to(mark.current, { yPercent: 14, scale: 1.1, ease: 'none', scrollTrigger: st })
     }, hero)
     return () => ctx.revert()
   }, [reduced, desktop])
 
   return (
-    <section ref={hero} className="relative isolate overflow-hidden bg-black lg:min-h-[100svh]">
-      <div ref={photo} className="relative aspect-[4/3.1] w-full sm:aspect-[3/2] lg:absolute lg:inset-0 lg:aspect-auto">
-        <img
-          src="/team/group-1280.webp"
-          srcSet="/team/group-1280.webp 1280w, /team/group.webp 2560w"
-          sizes="100vw"
-          alt="Co-founders Divine, Jeremy and Colin in Glow Up Exteriors uniforms beside the company van"
-          fetchpriority="high"
-          decoding="async"
-          draggable="false"
-          className="kenburns h-full w-full object-cover object-[26%_42%] lg:object-[30%_45%]"
-        />
-      </div>
-      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black/80 to-transparent" />
-      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-[34%] bg-gradient-to-t from-black via-black/90 to-transparent lg:hidden" />
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 hidden bg-[linear-gradient(270deg,#000_0%,rgba(0,0,0,.92)_26%,rgba(0,0,0,.55)_46%,rgba(0,0,0,0)_66%)] lg:block" />
-      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 hidden h-40 bg-gradient-to-t from-black to-transparent lg:block" />
+    <section ref={hero} className="relative isolate flex min-h-[100svh] items-center overflow-hidden bg-black">
+      {/* glow field */}
+      <div aria-hidden="true" className="glow-pulse pointer-events-none absolute left-1/2 top-1/2 h-[120vmin] w-[120vmin] rounded-full" style={{ background: 'radial-gradient(closest-side, rgba(0,122,255,.7), rgba(0,122,255,.28) 42%, transparent 70%)' }} />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-[0.07]" style={{ backgroundImage: 'linear-gradient(rgba(160,200,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(160,200,255,1) 1px, transparent 1px)', backgroundSize: '64px 64px', maskImage: 'radial-gradient(60% 60% at 50% 50%, #000, transparent 75%)', WebkitMaskImage: 'radial-gradient(60% 60% at 50% 50%, #000, transparent 75%)' }} />
 
-      <div className="relative z-10 mx-auto -mt-10 max-w-[1500px] px-5 pb-16 sm:-mt-16 md:px-10 lg:mt-0 lg:flex lg:min-h-[100svh] lg:items-center lg:justify-end lg:pb-12 lg:pt-24">
-        <div ref={content} className="lg:w-[40%] lg:max-w-[540px]">
-          <Reveal y={20} delay={0.1}>
-            <p className="inline-flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.35em] text-silver">
-              <span className="h-px w-10 bg-royal-light" /> Residential &amp; commercial
-            </p>
-          </Reveal>
-          <Headline text="Exterior care,|*elevated*." className="font-display mt-5 text-[clamp(2.9rem,12.5vw,5rem)] font-extrabold text-white lg:text-[clamp(3.2rem,4.9vw,5.6rem)]" />
-          <Reveal delay={0.25} className="mt-6">
-            <p className="max-w-md text-[17px] leading-relaxed text-silver md:text-lg">
-              Streak-free windows and spotless exteriors for homes and businesses, delivered by three young co-founders who show up, do it right and stand behind it.
-            </p>
-          </Reveal>
-          <Reveal delay={0.35} className="mt-8 flex flex-wrap gap-3">
-            <Button to="/contact" className="max-sm:!px-5">Get a free quote</Button>
-            <Button href="#estimate" variant="ghost" arrow={false} className="max-sm:!px-5">Instant estimate</Button>
-          </Reveal>
-          <Reveal delay={0.45} className="mt-9">
-            <ul className="flex flex-wrap gap-x-6 gap-y-2 text-[12px] font-bold uppercase tracking-[0.18em] text-silver-dim">
-              {['Free quotes', 'Residential', 'Commercial', 'Streak-free finish'].map((t) => (
-                <li key={t} className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-royal-light" />{t}</li>
-              ))}
-            </ul>
-          </Reveal>
-        </div>
+      {/* the logo, large and glowing, behind the copy */}
+      <div ref={mark} aria-hidden="true" className="pointer-events-none absolute inset-0 flex items-center justify-center">
+        <img src="/logo-blue.webp" alt="" draggable="false" fetchpriority="high" decoding="async" className="logo-float w-[min(86vw,720px)] max-w-none select-none opacity-[0.42] md:w-[min(64vmin,780px)]" style={{ filter: 'drop-shadow(0 0 28px rgba(0,122,255,.95)) drop-shadow(0 0 90px rgba(0,122,255,.7))' }} />
+      </div>
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black to-transparent" />
+
+      <div ref={content} className="relative z-10 mx-auto w-full max-w-[1500px] px-5 py-32 text-center md:px-10">
+        <Reveal y={20} delay={0.1}>
+          <p className="inline-flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.35em] text-silver">
+            <span className="h-px w-10 bg-royal-light" /> Residential &amp; commercial <span className="h-px w-10 bg-royal-light" />
+          </p>
+        </Reveal>
+        <Headline text="Exterior care,|*elevated*." accent="text-silver-grad" className="font-display mt-6 text-[clamp(3.4rem,11vw,10rem)] font-extrabold text-white [text-shadow:0_2px_30px_rgba(0,0,0,.85),0_4px_80px_rgba(0,0,0,.7)]" />
+        <Reveal delay={0.25} className="mx-auto mt-7 max-w-xl">
+          <p className="text-[17px] leading-relaxed text-white/90 [text-shadow:0_2px_20px_rgba(0,0,0,.9)] md:text-lg">
+            Streak-free windows and spotless exteriors for homes and businesses, delivered by three young co-founders who show up, do it right and stand behind it.
+          </p>
+        </Reveal>
+        <Reveal delay={0.35} className="mt-9 flex flex-wrap justify-center gap-3">
+          <Button to="/contact" className="max-sm:!px-5">Get a free quote</Button>
+          <Button href="#estimate" variant="ghost" arrow={false} className="max-sm:!px-5">Instant estimate</Button>
+        </Reveal>
+        <Reveal delay={0.45} className="mt-10">
+          <ul className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-[12px] font-bold uppercase tracking-[0.18em] text-silver-dim">
+            {['Free quotes', 'Residential', 'Commercial', 'Streak-free finish'].map((t) => (
+              <li key={t} className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-royal-light" />{t}</li>
+            ))}
+          </ul>
+        </Reveal>
       </div>
 
       <div aria-hidden="true" className="absolute bottom-6 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-3 lg:flex">
