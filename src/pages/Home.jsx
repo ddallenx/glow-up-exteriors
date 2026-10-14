@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { site, team } from '../config/site'
 import FounderCard from '../components/FounderCard'
 import { gsap } from '../lib/gsap'
@@ -15,9 +15,6 @@ import WindowCompare from '../components/WindowCompare'
 import Steps from '../components/Steps'
 import Cta from '../components/Cta'
 import { TLink } from '../components/Transition'
-import { SceneBoundary, SceneFallback, webglAvailable } from '../components/SceneBoundary'
-
-const HouseScene = lazy(() => import('../three/HouseScene'))
 
 /** First screen: the three co-founders and the truck, full-bleed, with the offer beside them. */
 function Hero() {
@@ -89,36 +86,6 @@ function Hero() {
   )
 }
 
-/** Interactive 3D house — hover or tap to spray; camera orbits as you scroll through it. */
-function HouseStage() {
-  const desktop = useIsDesktop()
-  const reduced = useReducedMotion()
-  const [gl, setGl] = useState(true)
-  useEffect(() => setGl(webglAvailable()), [])
-  return (
-    <section className="relative isolate overflow-hidden bg-black">
-      <div className="relative h-[92svh] min-h-[560px] w-full">
-        <div className="absolute inset-0 [mask-image:linear-gradient(to_bottom,transparent,black_14%,black_86%,transparent)]">
-          {gl ? (
-            <SceneBoundary>
-              <Suspense fallback={<SceneFallback />}>
-                <HouseScene desktop={desktop} reduced={reduced} />
-              </Suspense>
-            </SceneBoundary>
-          ) : <SceneFallback />}
-        </div>
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,.55)_0%,rgba(0,0,0,0)_30%)] lg:bg-[linear-gradient(90deg,rgba(0,0,0,.85)_0%,rgba(0,0,0,.45)_32%,rgba(0,0,0,0)_58%)]" />
-        <div className="pointer-events-none relative z-10 mx-auto flex h-full max-w-[1500px] flex-col justify-start px-5 pt-16 md:px-10 lg:justify-center lg:pt-0">
-          <Reveal><p className="text-[11px] font-bold uppercase tracking-[0.35em] text-royal-light">The result</p></Reveal>
-          <Headline as="h2" text="Your home,|*glowing* again." className="font-display mt-5 text-[clamp(2.6rem,6.4vw,6rem)] font-extrabold" />
-          <Reveal delay={0.2}><p className="mt-5 max-w-sm text-[16px] leading-relaxed text-silver">Explore the house. Move your cursor, or tap and drag, to wash the glass.</p></Reveal>
-          <Reveal delay={0.3} className="pointer-events-auto mt-7"><Button to="/window-washing" variant="ghost">See window washing</Button></Reveal>
-        </div>
-      </div>
-    </section>
-  )
-}
-
 function ServiceCard({ to, index, title, blurb, items, visual }) {
   return (
     <TLink to={to} className="group block [perspective:1200px]"><Tilt max={6} className="relative flex min-h-[560px] flex-col justify-between overflow-hidden rounded-[32px] border border-silver/15 bg-gradient-to-b from-ink to-navy p-7 md:p-10" glare>
@@ -168,8 +135,6 @@ function Home() {
           />
         </div>
       </section>
-
-      <HouseStage />
 
       <section className="relative bg-midnight py-24 md:py-36">
         <div className="mx-auto max-w-[1500px] px-5 md:px-10">

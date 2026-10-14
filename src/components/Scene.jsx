@@ -14,8 +14,8 @@ export default function Scene({ children, className = '', camera, fov = 35, labe
   const { tier, full } = useTier()
   const wrap = useRef(null)
   const [visible, setVisible] = useState(true)
-  const [dpr, setDpr] = useState(full ? 1.75 : 1.25)
-  useEffect(() => setDpr(full ? 1.75 : 1.25), [full])
+  const [dpr, setDpr] = useState(full ? 1.5 : 1.25)
+  useEffect(() => setDpr(full ? 1.5 : 1.25), [full])
 
   useEffect(() => {
     const io = new IntersectionObserver(([e]) => setVisible(e.isIntersecting), { rootMargin: '120px' })

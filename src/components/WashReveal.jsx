@@ -95,7 +95,7 @@ export default function WashReveal() {
     paint()
     let t
     const ro = new ResizeObserver(() => {
-      if (Math.abs(wrap.current.clientWidth - state.current.w) > 40) { clearTimeout(t); t = setTimeout(paint, 200) }
+      if (wrap.current && Math.abs(wrap.current.clientWidth - state.current.w) > 40) { clearTimeout(t); t = setTimeout(paint, 200) }
     })
     ro.observe(wrap.current)
     return () => { ro.disconnect(); clearTimeout(t); state.current.auto?.kill() }

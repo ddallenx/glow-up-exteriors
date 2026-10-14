@@ -19,13 +19,11 @@ export default function Intro({ onOpen }) {
 
   useEffect(() => {
     const start = performance.now()
-    let done = 0, total = 5
+    let done = 0, total = 3
     const bump = () => { done++; gsap.to(bar.current, { scaleX: Math.min(0.96, done / total), duration: 0.6, ease: 'power2.out', overwrite: true }) }
     const tasks = [
       document.fonts.ready,
       img('/logo.webp'),
-      import('../three/HouseScene'),
-      import('../three/House').then((m) => m.prewarmHouse()),
       Promise.all(['/team/group-1280.webp', '/team/divine.webp', '/team/jeremy.webp', '/team/colin.webp'].map(img)),
     ].map((p) => Promise.resolve(p).then(bump, bump))
     gsap.set(bar.current, { scaleX: 0.04, transformOrigin: '0 50%' })

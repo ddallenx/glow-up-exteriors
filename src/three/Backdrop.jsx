@@ -4,6 +4,7 @@ import * as THREE from 'three'
 import Studio from './Studio'
 import GlassOrb from './GlassOrb'
 import { usePointer } from '../hooks/usePointer'
+import Throttle from './Throttle'
 
 const rnd = (seed) => () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646 }
 
@@ -179,15 +180,17 @@ function Content({ kind, full, reduced }) {
   }
 }
 
-export default function Backdrop({ kind, full, reduced }) {
+export default function Backdrop({ kind, full, reduced, paused }) {
   return (
     <Canvas
-      dpr={[1, full ? 1.5 : 1.15]}
+      dpr={1}
+      frameloop={paused ? 'never' : 'demand'}
       camera={{ fov: 50, near: 0.1, far: 120, position: [0, 0, 10] }}
-      gl={{ alpha: true, antialias: false, powerPreference: 'high-performance' }}
+      gl={{ alpha: true, antialias: false, depth: true, stencil: false, powerPreference: 'high-performance' }}
       style={{ position: 'fixed', inset: 0, zIndex: -1, pointerEvents: 'none' }}
       onCreated={({ gl }) => { gl.setClearColor(0, 0); gl.toneMapping = THREE.ACESFilmicToneMapping }}
     >
+      <Throttle fps={30} />
       <Drift amount={kind === 'orbit' ? 0.4 : 1} />
       <Content kind={kind} full={full} reduced={reduced} />
     </Canvas>

@@ -48,7 +48,7 @@ export default function GlassOrb({ full, reduced, container, calm = false }) {
           <mesh ref={core}>
             <icosahedronGeometry args={[1.35, full ? 24 : 12]} />
             {full ? (
-              <MeshTransmissionMaterial samples={6} resolution={512} thickness={1.4} ior={1.35} chromaticAberration={0.08} anisotropicBlur={0.3} distortion={0.35} distortionScale={0.4} temporalDistortion={reduced ? 0 : 0.12} roughness={0.02} color="#bcdcff" backside backsideThickness={0.4} envMapIntensity={2.4} />
+              <MeshTransmissionMaterial samples={3} resolution={256} thickness={1.4} ior={1.35} chromaticAberration={0.08} anisotropicBlur={0.3} distortion={0.35} distortionScale={0.4} temporalDistortion={reduced ? 0 : 0.12} roughness={0.02} color="#bcdcff" backside backsideThickness={0.4} envMapIntensity={2.4} />
             ) : (
               <meshPhysicalMaterial color="#8cc4ff" roughness={0.04} metalness={0.1} clearcoat={1} transparent opacity={0.55} envMapIntensity={3} />
             )}
