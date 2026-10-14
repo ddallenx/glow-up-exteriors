@@ -148,7 +148,7 @@ export const team = [
   },
   {
     name: 'Jeremy',
-    crop: 'full',
+    crop: 'bust',
     age: 20,
     role: 'Co-Founder',
     focus: 'Friendlier homes, fuller potential',
