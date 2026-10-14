@@ -17,6 +17,9 @@ export default function LivePhoto({ item, seed = 5, label }) {
   const box = useRef(null), after = useRef(null), line = useRef(null), video = useRef(null)
   const st = useRef({ p: 0, tween: null })
   const alt = item?.label || label || 'Window'
+  const aspect = item?.aspect || 1.6
+  const frame = { aspectRatio: aspect }
+  const rootStyle = aspect < 1 ? { width: '100%', maxWidth: 'min(100%, 560px)', marginInline: 'auto' } : undefined
 
   const paint = (p) => {
     if (after.current) after.current.style.clipPath = `inset(0 ${100 - p * 100}% 0 0)`
@@ -44,17 +47,18 @@ export default function LivePhoto({ item, seed = 5, label }) {
 
   if (mode === 'slider') {
     return (
-      <div key="slider" className="mode-in">
-        <BeforeAfter before={beforeEl} after={afterEl} />
+      <div key="slider" className="mode-in" style={rootStyle}>
+        <BeforeAfter before={beforeEl} after={afterEl} aspect={aspect} />
         <Toggle mode={mode} setMode={setMode} />
       </div>
     )
   }
   return (
-    <div key="live" className="mode-in">
+    <div key="live" className="mode-in" style={rootStyle}>
       <div
         ref={box}
-        className="relative aspect-[8/5] w-full select-none overflow-hidden rounded-[28px] border border-silver/20 shadow-[0_40px_80px_-30px_rgba(0,0,0,0.7)] [-webkit-touch-callout:none] [touch-action:pan-y]"
+        style={frame}
+        className="relative w-full select-none overflow-hidden rounded-[28px] border border-silver/20 shadow-[0_40px_80px_-30px_rgba(0,0,0,0.7)] [-webkit-touch-callout:none] [touch-action:pan-y]"
         onPointerEnter={(e) => e.pointerType === 'mouse' && start()}
         onPointerLeave={(e) => e.pointerType === 'mouse' && stop()}
         onPointerDown={(e) => e.pointerType !== 'mouse' && start()}
@@ -82,7 +86,7 @@ export default function LivePhoto({ item, seed = 5, label }) {
         </span>
         <span className={`pointer-events-none absolute right-4 top-4 rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.2em] backdrop-blur transition-all duration-700 ${playing ? 'bg-royal/90 text-white' : 'bg-midnight/70 text-silver'}`}>{playing ? 'After' : 'Before'}</span>
         <span className={`pointer-events-none absolute inset-x-0 bottom-4 text-center text-[11px] font-bold uppercase tracking-[0.3em] text-white/90 transition-opacity duration-500 ${playing ? 'opacity-0' : 'opacity-100'}`}>
-          <span className="rounded-full bg-midnight/60 px-4 py-2 backdrop-blur"><span className="hidden [@media(hover:hover)]:inline">Hover</span><span className="[@media(hover:hover)]:hidden">Press &amp; hold</span> to watch it wash clean</span>
+          <span className="whitespace-nowrap rounded-full bg-midnight/60 px-3 py-2 text-[10px] tracking-[0.2em] backdrop-blur sm:px-4 sm:text-[11px] sm:tracking-[0.3em]"><span className="hidden [@media(hover:hover)]:inline">Hover</span><span className="[@media(hover:hover)]:hidden">Press &amp; hold</span> to watch it wash clean</span>
         </span>
       </div>
       <Toggle mode={mode} setMode={setMode} onPlay={() => (playing ? stop() : start())} playing={playing} />

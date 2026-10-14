@@ -26,7 +26,7 @@ export default function Intro({ onOpen }) {
       img('/logo.webp'),
       import('../three/HouseScene'),
       import('../three/House').then((m) => m.prewarmHouse()),
-      Promise.all(['/team/divine.webp', '/team/jeremy.webp', '/team/colin.webp'].map(img)),
+      Promise.all(['/team/group-1280.webp', '/team/divine.webp', '/team/jeremy.webp', '/team/colin.webp'].map(img)),
     ].map((p) => Promise.resolve(p).then(bump, bump))
     gsap.set(bar.current, { scaleX: 0.04, transformOrigin: '0 50%' })
     gsap.to(introState, { appear: 1, duration: 1.6, ease: 'power3.out', delay: 0.35 })

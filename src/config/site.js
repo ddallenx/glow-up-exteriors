@@ -183,4 +183,17 @@ export const heroVideo = { src: '', poster: '' }
  * Visitors hover (or press & hold on a phone) to play it like a Live Photo, or switch to a drag slider.
  * While this list is empty, the site shows illustrated examples instead.
  */
-export const beforeAfter = []
+export const beforeAfter = [
+  { before: '/ba/window1-before.webp', after: '/ba/window1-after.webp', label: 'Brick-front window', aspect: 0.8 },
+]
+
+/**
+ * WINDOW PRICING (used by the instant estimator)
+ * Price per window outside only is low–high. Inside & outside is `bothSidesMultiplier` times that.
+ */
+export const pricing = {
+  perWindowLow: 10,
+  perWindowHigh: 12,
+  bothSidesMultiplier: 2,
+  disclaimer: 'Estimate for standard windows. Large, hard-to-reach or commercial storefront glass can differ. Your exact price is confirmed in your free quote.',
+}

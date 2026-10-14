@@ -1,10 +1,10 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
-import { heroVideo, site, team } from '../config/site'
+import { site, team } from '../config/site'
 import FounderCard from '../components/FounderCard'
 import { gsap } from '../lib/gsap'
 import OrbSection from '../components/OrbSection'
+import Estimator from '../components/Estimator'
 import Tilt from '../components/Tilt'
-import { useTier } from '../hooks/useTier'
 import { useDocumentTitle, useIsDesktop, useReducedMotion } from '../hooks/useMedia'
 import { Headline, Reveal, RevealGroup, ScrubText } from '../components/Reveal'
 import Button from '../components/Button'
@@ -19,66 +19,101 @@ import { SceneBoundary, SceneFallback, webglAvailable } from '../components/Scen
 
 const HouseScene = lazy(() => import('../three/HouseScene'))
 
+/** First screen: the three co-founders and the truck, full-bleed, with the offer beside them. */
 function Hero() {
   const desktop = useIsDesktop()
   const reduced = useReducedMotion()
-  const [gl, setGl] = useState(true)
-  const hero = useRef(null), content = useRef(null), stage = useRef(null)
-  useEffect(() => setGl(webglAvailable()), [])
+  const hero = useRef(null), content = useRef(null), photo = useRef(null)
 
-  // Scroll-driven depth: copy drifts up and fades, the 3D stage pushes in.
   useEffect(() => {
     if (reduced || !desktop) return
     const ctx = gsap.context(() => {
-      const st = { trigger: hero.current, start: 'top top', end: 'bottom 20%', scrub: true }
-      gsap.to(content.current, { yPercent: -14, opacity: 0, ease: 'none', scrollTrigger: st })
-      gsap.to(stage.current, { scale: 1.12, ease: 'none', scrollTrigger: st })
+      const st = { trigger: hero.current, start: 'top top', end: 'bottom 15%', scrub: true }
+      gsap.to(content.current, { yPercent: -12, opacity: 0, ease: 'none', scrollTrigger: st })
+      gsap.to(photo.current, { yPercent: 8, scale: 1.08, ease: 'none', scrollTrigger: st })
     }, hero)
     return () => ctx.revert()
   }, [reduced, desktop])
 
   return (
-    <section ref={hero} className="relative isolate min-h-[100svh] overflow-hidden bg-midnight">
-      <div ref={stage} className="absolute inset-x-0 bottom-0 h-[54svh] [mask-image:linear-gradient(to_bottom,transparent,black_22%)] md:inset-0 md:h-auto md:[mask-image:none]">
-        {heroVideo.src ? (
-          <video className="absolute inset-0 h-full w-full object-cover" src={heroVideo.src} poster={heroVideo.poster || undefined} autoPlay muted loop playsInline preload="metadata" aria-hidden="true" />
-        ) : gl ? (
-          <SceneBoundary>
-            <Suspense fallback={<SceneFallback />}>
-              <HouseScene desktop={desktop} reduced={reduced} />
-            </Suspense>
-          </SceneBoundary>
-        ) : <SceneFallback />}
+    <section ref={hero} className="relative isolate overflow-hidden bg-black lg:min-h-[100svh]">
+      <div ref={photo} className="relative aspect-[4/3.1] w-full sm:aspect-[3/2] lg:absolute lg:inset-0 lg:aspect-auto">
+        <img
+          src="/team/group-1280.webp"
+          srcSet="/team/group-1280.webp 1280w, /team/group.webp 2560w"
+          sizes="100vw"
+          alt="Co-founders Divine, Jeremy and Colin in Glow Up Exteriors uniforms beside the company van"
+          fetchpriority="high"
+          decoding="async"
+          draggable="false"
+          className="kenburns h-full w-full object-cover object-[26%_42%] lg:object-[30%_45%]"
+        />
       </div>
-      {/* readability gradients */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,#000000_0%,rgba(0,0,0,.85)_30%,rgba(0,0,0,0)_52%)] md:bg-[linear-gradient(90deg,rgba(0,0,0,.92)_0%,rgba(0,0,0,.55)_36%,rgba(0,0,0,0)_62%)]" />
-      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-44 bg-gradient-to-b from-midnight/85 to-transparent" />
-      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-midnight via-midnight/70 to-transparent" />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black/80 to-transparent" />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-[34%] bg-gradient-to-t from-black via-black/90 to-transparent lg:hidden" />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 hidden bg-[linear-gradient(270deg,#000_0%,rgba(0,0,0,.92)_26%,rgba(0,0,0,.55)_46%,rgba(0,0,0,0)_66%)] lg:block" />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 hidden h-40 bg-gradient-to-t from-black to-transparent lg:block" />
 
-      <div ref={content} className="pointer-events-none relative z-10 mx-auto flex min-h-[100svh] max-w-[1500px] flex-col justify-start px-5 pb-[calc(54svh-2rem)] pt-28 md:justify-center md:px-10 md:pb-16 md:pt-24">
-        <Reveal y={20} delay={0.1}>
-          <p className="inline-flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.35em] text-silver">
-            <span className="h-px w-10 bg-royal-light" /> Residential & commercial window and pressure washing
-          </p>
-        </Reveal>
-        <Headline text="Your home,|*glowing*|again." className="font-display mt-6 text-[clamp(3.4rem,11vw,9rem)] font-extrabold text-white" />
-        <Reveal delay={0.25} className="mt-7 max-w-md">
-          <p className="text-[17px] leading-relaxed text-silver md:text-lg">
-            Streak-free glass and spotless exteriors for homes and businesses. A young local crew that treats every property like our own.
-          </p>
-        </Reveal>
-        <Reveal delay={0.35} className="pointer-events-auto mt-8 flex gap-3">
-          <Button to="/contact" className="max-sm:!px-5">Get a free quote</Button>
-          <Button to="/window-washing" variant="ghost" arrow={false} className="max-sm:!px-5">Services</Button>
-        </Reveal>
-        <p className="pointer-events-none mt-8 hidden text-xs uppercase tracking-[0.25em] text-silver-dim md:block">
-          Move your cursor over the house to spray ↗
-        </p>
+      <div className="relative z-10 mx-auto -mt-10 max-w-[1500px] px-5 pb-16 sm:-mt-16 md:px-10 lg:mt-0 lg:flex lg:min-h-[100svh] lg:items-center lg:justify-end lg:pb-12 lg:pt-24">
+        <div ref={content} className="lg:w-[40%] lg:max-w-[540px]">
+          <Reveal y={20} delay={0.1}>
+            <p className="inline-flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.35em] text-silver">
+              <span className="h-px w-10 bg-royal-light" /> Residential &amp; commercial
+            </p>
+          </Reveal>
+          <Headline text="Exterior care,|*elevated*." className="font-display mt-5 text-[clamp(2.9rem,12.5vw,5rem)] font-extrabold text-white lg:text-[clamp(3.2rem,4.9vw,5.6rem)]" />
+          <Reveal delay={0.25} className="mt-6">
+            <p className="max-w-md text-[17px] leading-relaxed text-silver md:text-lg">
+              Streak-free windows and spotless exteriors for homes and businesses, delivered by three young co-founders who show up, do it right and stand behind it.
+            </p>
+          </Reveal>
+          <Reveal delay={0.35} className="mt-8 flex flex-wrap gap-3">
+            <Button to="/contact" className="max-sm:!px-5">Get a free quote</Button>
+            <Button href="#estimate" variant="ghost" arrow={false} className="max-sm:!px-5">Instant estimate</Button>
+          </Reveal>
+          <Reveal delay={0.45} className="mt-9">
+            <ul className="flex flex-wrap gap-x-6 gap-y-2 text-[12px] font-bold uppercase tracking-[0.18em] text-silver-dim">
+              {['Free quotes', 'Residential', 'Commercial', 'Streak-free finish'].map((t) => (
+                <li key={t} className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-royal-light" />{t}</li>
+              ))}
+            </ul>
+          </Reveal>
+        </div>
       </div>
 
-      <div aria-hidden="true" className="absolute bottom-6 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-3 md:flex">
+      <div aria-hidden="true" className="absolute bottom-6 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-3 lg:flex">
         <span className="text-[10px] font-bold uppercase tracking-[0.35em] text-silver-dim">Scroll</span>
         <span className="scroll-cue relative block h-12 w-px overflow-hidden bg-white/20" />
+      </div>
+    </section>
+  )
+}
+
+/** Interactive 3D house — hover or tap to spray; camera orbits as you scroll through it. */
+function HouseStage() {
+  const desktop = useIsDesktop()
+  const reduced = useReducedMotion()
+  const [gl, setGl] = useState(true)
+  useEffect(() => setGl(webglAvailable()), [])
+  return (
+    <section className="relative isolate overflow-hidden bg-black">
+      <div className="relative h-[92svh] min-h-[560px] w-full">
+        <div className="absolute inset-0 [mask-image:linear-gradient(to_bottom,transparent,black_14%,black_86%,transparent)]">
+          {gl ? (
+            <SceneBoundary>
+              <Suspense fallback={<SceneFallback />}>
+                <HouseScene desktop={desktop} reduced={reduced} />
+              </Suspense>
+            </SceneBoundary>
+          ) : <SceneFallback />}
+        </div>
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,.55)_0%,rgba(0,0,0,0)_30%)] lg:bg-[linear-gradient(90deg,rgba(0,0,0,.85)_0%,rgba(0,0,0,.45)_32%,rgba(0,0,0,0)_58%)]" />
+        <div className="pointer-events-none relative z-10 mx-auto flex h-full max-w-[1500px] flex-col justify-start px-5 pt-16 md:px-10 lg:justify-center lg:pt-0">
+          <Reveal><p className="text-[11px] font-bold uppercase tracking-[0.35em] text-royal-light">The result</p></Reveal>
+          <Headline as="h2" text="Your home,|*glowing* again." className="font-display mt-5 text-[clamp(2.6rem,6.4vw,6rem)] font-extrabold" />
+          <Reveal delay={0.2}><p className="mt-5 max-w-sm text-[16px] leading-relaxed text-silver">Explore the house. Move your cursor, or tap and drag, to wash the glass.</p></Reveal>
+          <Reveal delay={0.3} className="pointer-events-auto mt-7"><Button to="/window-washing" variant="ghost">See window washing</Button></Reveal>
+        </div>
       </div>
     </section>
   )
@@ -122,31 +157,21 @@ function Home() {
   return (
     <>
       <Hero />
-      <Marquee className="bg-midnight" />
+      <Marquee className="bg-black" />
 
-      <section className="relative bg-midnight py-28 md:py-44">
+      <section className="relative bg-midnight py-24 md:py-40">
         <div className="mx-auto max-w-[1500px] px-5 md:px-10">
           <Reveal><p className="text-[11px] font-bold uppercase tracking-[0.35em] text-royal-light">Who we are</p></Reveal>
           <ScrubText
             className="font-display mt-8 max-w-6xl text-[clamp(2rem,5.2vw,4.8rem)] font-bold leading-[1.05] tracking-[-0.04em] text-white"
-            text="We are a young, local crew with one obsession: leaving every home and business brighter, cleaner and *glowing*. Crystal-clear windows. Spotless exteriors. Service you can feel proud of."
+            text="Three co-founders. One standard. We care for homes and businesses the way we would want ours cared for: *thorough*, on time and spotless."
           />
         </div>
       </section>
 
-      <section className="relative bg-midnight pb-24 md:pb-36">
-        <div className="mx-auto max-w-[1500px] px-5 md:px-10">
-          <SectionTitle eyebrow="The co-founders" title="Three founders,|one *promise*." />
-          <RevealGroup className="mt-6 grid gap-6 md:grid-cols-3" stagger={0.15}>
-            {team.map((p) => <FounderCard key={p.name} p={p} compact />)}
-          </RevealGroup>
-          <Reveal className="mt-12"><Button to="/about" variant="ghost">Meet the team</Button></Reveal>
-        </div>
-      </section>
+      <HouseStage />
 
-      <OrbSection eyebrow="Crystal clear" title="Every angle,|every *reflection*." body="Streak-free glass should look like there is nothing there at all. Move your cursor and scroll. The glass reacts, just like your windows will in the light." cta={{ to: '/window-washing', label: 'See window washing' }} />
-
-      <section className="relative bg-midnight pb-24 md:pb-36">
+      <section className="relative bg-midnight py-24 md:py-36">
         <div className="mx-auto max-w-[1500px] px-5 md:px-10">
           <SectionTitle eyebrow="Who we serve" title="Homes and *businesses*,|one standard." />
           <RevealGroup className="mt-14 grid gap-6 md:grid-cols-2" stagger={0.15}>
@@ -167,9 +192,11 @@ function Home() {
         </div>
       </section>
 
-      <section className="relative bg-midnight pb-28 md:pb-44">
+      <Estimator />
+
+      <section className="relative bg-midnight pb-24 md:pb-40">
         <div className="mx-auto max-w-[1500px] px-5 md:px-10">
-          <SectionTitle eyebrow="Services" title="Two ways we|make homes *shine*." />
+          <SectionTitle eyebrow="Services" title="Two ways we|make exteriors *shine*." />
           <RevealGroup className="mt-16 grid gap-6 lg:grid-cols-2" stagger={0.15}>
             <ServiceCard to="/window-washing" index={1} title="Window Washing" blurb="Crystal-clear, streak-free glass with frames, sills and tracks detailed. See the difference the moment the light hits." items={['Exterior glass', 'Frames & sills', 'Hard-water spots']}
               visual={<AnimatedWindows className="-mt-4 scale-[1.15]" />} />
@@ -179,27 +206,37 @@ function Home() {
         </div>
       </section>
 
-      <section className="relative overflow-hidden bg-midnight py-28 md:py-40">
+      <section className="relative overflow-hidden bg-midnight py-24 md:py-36">
         <div aria-hidden="true" className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-royal/40 to-transparent" />
         <div className="mx-auto grid max-w-[1500px] items-center gap-14 px-5 md:px-10 lg:grid-cols-12">
-          <div className="lg:col-span-5">
-            <SectionTitle eyebrow="The difference" title="Drag to see|the *glow up*.">
-              Years of grime, water spots and haze — gone in one pass. Slide to compare a dirty window with the same pane after a Glow Up wash.
+          <div className="lg:col-span-6">
+            <SectionTitle eyebrow="Real results" title="Same window.|The *difference*.">
+              A real window we cleaned, shot from the same spot. Hover over the photo, or press and hold on your phone, to watch it clear.
             </SectionTitle>
-            <Reveal delay={0.15} className="mt-10"><Button to="/window-washing" variant="dark">See window washing</Button></Reveal>
+            <Reveal delay={0.15} className="mt-10"><Button to="/window-washing" variant="ghost">See window washing</Button></Reveal>
           </div>
-          <Reveal className="lg:col-span-7">
-            <WindowCompare index={0} seed={5} />
-          </Reveal>
+          <Reveal className="lg:col-span-6"><WindowCompare index={0} seed={5} /></Reveal>
         </div>
       </section>
 
-      <section className="relative bg-midnight py-28 md:py-44">
+      <section className="relative bg-midnight pb-24 md:pb-36">
+        <div className="mx-auto max-w-[1500px] px-5 md:px-10">
+          <SectionTitle eyebrow="The co-founders" title="Three founders,|one *promise*." />
+          <RevealGroup className="mt-6 grid gap-6 md:grid-cols-3" stagger={0.15}>
+            {team.map((p) => <FounderCard key={p.name} p={p} compact />)}
+          </RevealGroup>
+          <Reveal className="mt-12"><Button to="/about" variant="ghost">Meet the team</Button></Reveal>
+        </div>
+      </section>
+
+      <OrbSection eyebrow="Crystal clear" title="Every angle,|every *reflection*." body="Streak-free glass should look like there is nothing there at all. Move your cursor and scroll. The glass reacts, just like your windows will in the light." cta={{ to: '/window-washing', label: 'See window washing' }} />
+
+      <section className="relative bg-midnight py-24 md:py-40">
         <div className="mx-auto max-w-[1500px] px-5 md:px-10">
           <SectionTitle eyebrow="How it works" title="Simple,|careful, *spotless*." />
           <div className="mt-16">
             <Steps steps={[
-              ['Free quote', 'Tell us about your home. We reply with a clear, no-pressure price.'],
+              ['Free quote', 'Tell us about your property. We reply with a clear, no-pressure price.'],
               ['Prep & protect', 'We shield landscaping, sills and entries before we start.'],
               ['The glow up', 'Pro-grade tools and the right technique for every surface.'],
               ['Final walkthrough', 'We check every detail with you, and make it right if it is not perfect.'],

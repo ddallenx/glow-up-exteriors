@@ -264,7 +264,7 @@ function LogoCenter() {
     g.current.scale.setScalar(0.3 + 0.7 * s)
     g.current.rotation.set(0.08, (p - 0.5) * 3.6, 0)
   })
-  return <group ref={g}><Suspense fallback={null}><LogoSlab width={15} layers={20} depth={1.6} overlay /></Suspense></group>
+  return <group ref={g}><Suspense fallback={null}><LogoSlab width={8.5} layers={20} depth={1.2} overlay /></Suspense></group>
 }
 
 function Rig({ kind }) {

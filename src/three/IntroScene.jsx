@@ -85,7 +85,7 @@ function Rig({ children }) {
     light.current.scale.setScalar(1 + open * 1.5)
   })
   const w = viewport.width / 2 + 0.02, h = viewport.height + 0.02
-  const lw = Math.min(8.4, viewport.width * 0.72, viewport.height * 0.9)
+  const lw = Math.min(7, viewport.width * 0.7, viewport.height * 0.84)
   return (
     <>
       <Sash side={-1} w={w} h={h} />

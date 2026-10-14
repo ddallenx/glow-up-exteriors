@@ -13,6 +13,8 @@ services text, FAQs and team bios there. Commit and push — Vercel redeploys au
 - **Reviews:** only real reviews should go in `reviews`. The section stays hidden while it is empty.
 - **Before/after Live Photos:** list your own photo pairs or short clips in `beforeAfter` in `site.js` (instructions are in the file). Visitors hover or press and hold to watch it wash clean.
 - **Commercial services:** edit `commercialService` in `site.js`.
+- **Pricing / estimator:** per-window prices live in `pricing` in `site.js` (currently $10–$12 outside, 2× for inside & outside).
+- **Before/after photos:** add pairs to `beforeAfter` (see the comments). Photos of the same window from the same angle work best.
 - **Hero video (optional):** drop an `.mp4` you own or have licensed into `public/video/` and set `heroVideo.src` in `site.js`. The homepage then plays it behind the headline instead of the 3D house.
 - **Team photos:** drop images in `public/team/` and set `photo: '/team/divine.jpg'`.
 - **Contact placeholders:** the phone number and email currently in the file are placeholders — replace them before launch.

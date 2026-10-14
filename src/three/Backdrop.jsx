@@ -174,7 +174,7 @@ function Content({ kind, full, reduced }) {
     case 'spray': return <Spray jets={3} per={full ? 90 : 50} mist={full ? 70 : 36} reduced={reduced} />
     case 'particles': return <Particles count={full ? 420 : 220} reduced={reduced} />
     case 'city': return <><Studio res={128} /><fog attach="fog" args={['#000000', 18, 58]} /><City reduced={reduced} /></>
-    case 'orbit': return <group position={[full ? 5.6 : 0.6, full ? 1.8 : 3, -3]} scale={full ? 1.25 : 1}><GlassOrb full={full} reduced={reduced} calm /></group>
+    case 'orbit': return <group position={[full ? 6.4 : 0.6, full ? 2.9 : 3, -5]} scale={full ? 1.0 : 1}><GlassOrb full={full} reduced={reduced} calm /></group>
     default: return null
   }
 }

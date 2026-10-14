@@ -70,7 +70,7 @@ export function Logo3DScene({ full, reduced }) {
     <>
       <Studio res={full ? 256 : 128} />
       <mesh position={[0, 0, -1.6]}><planeGeometry args={[8.2, 5.2]} /><meshBasicMaterial map={halo} opacity={0.8} transparent blending={THREE.AdditiveBlending} depthWrite={false} toneMapped={false} /></mesh>
-      <group ref={g}><LogoSlab width={6.2} layers={full ? 26 : 16} depth={0.9} /></group>
+      <group ref={g}><LogoSlab width={4.1} layers={full ? 26 : 16} depth={0.7} /></group>
     </>
   )
 }

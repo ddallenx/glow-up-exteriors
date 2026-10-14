@@ -12,7 +12,7 @@ import Water from './Water'
 const HORIZON = '#c9b6bd'
 const SUN = new THREE.Vector3(-34, 7, 26)
 
-function Rig({ desktop, reduced }) {
+function Rig({ desktop, reduced, wrap }) {
   const { camera, pointer, size } = useThree()
   const intro = useRef({ v: reduced ? 1 : 0 })
   const cur = useRef(new THREE.Vector3())
@@ -26,7 +26,8 @@ function Rig({ desktop, reduced }) {
 
   useFrame((s, dt) => {
     const aspect = size.width / size.height
-    const scrollY = Math.min(window.scrollY / Math.max(window.innerHeight, 1), 1.2)
+    const rect = wrap.current?.getBoundingClientRect()
+    const scrollY = rect ? Math.min(Math.max(-rect.top / Math.max(window.innerHeight, 1), 0), 1.2) : 0
     const e = intro.current.v
     const sway = reduced ? 0 : Math.sin(s.clock.elapsedTime * 0.25) * 0.08
     const az = THREE.MathUtils.lerp(1.15, 0.5, e) + pointer.x * 0.16 + scrollY * 0.55 + sway
@@ -82,7 +83,7 @@ export default function HouseScene({ desktop, reduced }) {
         <PerformanceMonitor onDecline={() => setDpr(1)} />
         {!desktop && <Throttle fps={30} />}
         <fog attach="fog" args={[HORIZON, 38, 105]} />
-        <Rig desktop={desktop} reduced={reduced} />
+        <Rig desktop={desktop} reduced={reduced} wrap={wrap} />
         <Sky distance={200} sunPosition={SUN.toArray()} turbidity={8} rayleigh={2.2} mieCoefficient={0.006} mieDirectionalG={0.85} />
 
         <hemisphereLight args={['#9db8ff', '#4c6a3a', 0.8]} />

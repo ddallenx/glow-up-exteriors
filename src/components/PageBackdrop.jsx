@@ -20,7 +20,7 @@ export default function PageBackdrop() {
   const kind = KIND[pathname]
   if (!kind || tier !== 'full') return null
   return (
-    <div aria-hidden="true" className={`pointer-events-none fixed inset-0 -z-10 ${kind === 'city' ? 'bg-midnight/50' : 'bg-midnight/15'}`}>
+    <div aria-hidden="true" className={`pointer-events-none fixed inset-0 -z-10 ${kind === 'city' ? 'bg-midnight/50' : 'bg-midnight/15'} ${kind === 'orbit' ? 'opacity-50' : ''}`}>
       <SceneBoundary fallback={null}>
         <Suspense fallback={null}><Backdrop kind={kind} full={full} reduced={reduced} /></Suspense>
       </SceneBoundary>

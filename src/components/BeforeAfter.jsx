@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from 'react'
 
-export default function BeforeAfter({ before, after, className = '', initial = 50, beforeLabel = 'Before', afterLabel = 'After' }) {
+export default function BeforeAfter({ before, after, className = '', aspect = 1.6, initial = 50, beforeLabel = 'Before', afterLabel = 'After' }) {
   const box = useRef(null)
   const [pos, setPos] = useState(initial)
   const drag = useRef(false)
@@ -21,7 +21,8 @@ export default function BeforeAfter({ before, after, className = '', initial = 5
   return (
     <div
       ref={box}
-      className={`relative aspect-[8/5] w-full cursor-ew-resize touch-pan-y select-none overflow-hidden rounded-[28px] border border-silver/20 shadow-[0_40px_80px_-30px_rgba(0,0,0,0.7)] ${className}`}
+      style={{ aspectRatio: aspect }}
+      className={`relative w-full cursor-ew-resize touch-pan-y select-none overflow-hidden rounded-[28px] border border-silver/20 shadow-[0_40px_80px_-30px_rgba(0,0,0,0.7)] ${className}`}
       onPointerDown={(e) => { drag.current = true; e.currentTarget.setPointerCapture(e.pointerId); set(e.clientX) }}
       onPointerMove={(e) => drag.current && set(e.clientX)}
       onPointerUp={() => (drag.current = false)}
