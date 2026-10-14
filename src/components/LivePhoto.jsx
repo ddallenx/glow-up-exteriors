@@ -4,7 +4,7 @@ import { useReducedMotion } from '../hooks/useMedia'
 import BeforeAfter from './BeforeAfter'
 import WindowScene from './WindowScene'
 
-const img = (src, alt) => <img src={src} alt={alt} className="h-full w-full object-cover" loading="lazy" draggable="false" />
+const img = (src, alt, sm) => <img src={src} srcSet={sm ? `${sm} 900w, ${src} 1500w` : undefined} sizes="(min-width: 1024px) 560px, 100vw" alt={alt} className="h-full w-full object-cover" loading="lazy" decoding="async" draggable="false" />
 
 /**
  * "Live Photo" before/after: shows the dirty still; press & hold (touch) or hover (mouse) and it washes clean.
@@ -19,7 +19,7 @@ export default function LivePhoto({ item, seed = 5, label }) {
   const alt = item?.label || label || 'Window'
   const aspect = item?.aspect || 1.6
   const frame = { aspectRatio: aspect }
-  const rootStyle = aspect < 1 ? { width: '100%', maxWidth: 'min(100%, 560px)', marginInline: 'auto' } : undefined
+  const rootStyle = aspect < 1 ? { width: '100%', maxWidth: mode === 'side' ? 'min(100%, 920px)' : 'min(100%, 560px)', marginInline: 'auto' } : undefined
 
   const paint = (p) => {
     if (after.current) after.current.style.clipPath = `inset(0 ${100 - p * 100}% 0 0)`
@@ -42,14 +42,29 @@ export default function LivePhoto({ item, seed = 5, label }) {
   }
   useEffect(() => { paint(0); return () => st.current.tween?.kill() }, [mode])
 
-  const beforeEl = item ? img(item.before, `${alt} before cleaning`) : <WindowScene dirty seed={seed} />
-  const afterEl = item ? img(item.after, `${alt} after cleaning`) : <WindowScene seed={seed} />
+  const beforeEl = item ? img(item.before, `${alt} before cleaning`, item.beforeSm) : <WindowScene dirty seed={seed} />
+  const afterEl = item ? img(item.after, `${alt} after cleaning`, item.afterSm) : <WindowScene seed={seed} />
+
+  if (mode === 'side') {
+    const cell = (el, tag, hot) => (
+      <figure className="relative overflow-hidden rounded-[22px] border border-silver/20 shadow-[0_30px_70px_-30px_rgba(0,0,0,.8)]" style={{ aspectRatio: aspect }}>
+        <div className="absolute inset-0">{el}</div>
+        <figcaption className={`absolute left-3 top-3 rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.2em] backdrop-blur ${hot ? 'bg-royal text-white shadow-[0_0_24px_rgba(0,122,255,.7)]' : 'bg-midnight/70 text-white'}`}>{tag}</figcaption>
+      </figure>
+    )
+    return (
+      <div key="side" className="mode-in" style={rootStyle}>
+        <div className="grid grid-cols-2 gap-3 md:gap-5">{cell(beforeEl, 'Before')}{cell(afterEl, 'After', true)}</div>
+        <Toggle mode={mode} setMode={setMode} caption={item ? (item.caption || CAPTION) : null} />
+      </div>
+    )
+  }
 
   if (mode === 'slider') {
     return (
       <div key="slider" className="mode-in" style={rootStyle}>
         <BeforeAfter before={beforeEl} after={afterEl} aspect={aspect} />
-        <Toggle mode={mode} setMode={setMode} />
+        <Toggle mode={mode} setMode={setMode} caption={item ? (item.caption || CAPTION) : null} />
       </div>
     )
   }
@@ -89,20 +104,24 @@ export default function LivePhoto({ item, seed = 5, label }) {
           <span className="whitespace-nowrap rounded-full bg-midnight/60 px-3 py-2 text-[10px] tracking-[0.2em] backdrop-blur sm:px-4 sm:text-[11px] sm:tracking-[0.3em]"><span className="hidden [@media(hover:hover)]:inline">Hover</span><span className="[@media(hover:hover)]:hidden">Press &amp; hold</span> to watch it wash clean</span>
         </span>
       </div>
-      <Toggle mode={mode} setMode={setMode} onPlay={() => (playing ? stop() : start())} playing={playing} />
+      <Toggle mode={mode} setMode={setMode} onPlay={() => (playing ? stop() : start())} playing={playing} caption={item ? (item.caption || CAPTION) : null} />
     </div>
   )
 }
 
-function Toggle({ mode, setMode, onPlay, playing }) {
+const CAPTION = 'Real job photos: same window, same spot. Sharpened and color-corrected only.'
+
+function Toggle({ mode, setMode, onPlay, playing, caption }) {
   const b = 'min-h-[44px] rounded-full border px-5 text-sm font-bold transition-colors'
   return (
     <div className="mt-4 flex flex-wrap items-center gap-2">
       <div role="group" aria-label="Comparison style" className="flex gap-2">
         <button onClick={() => setMode('live')} aria-pressed={mode === 'live'} className={`${b} ${mode === 'live' ? 'border-royal bg-royal text-white' : 'border-silver/30 text-silver hover:border-white hover:text-white'}`}>Live</button>
         <button onClick={() => setMode('slider')} aria-pressed={mode === 'slider'} className={`${b} ${mode === 'slider' ? 'border-royal bg-royal text-white' : 'border-silver/30 text-silver hover:border-white hover:text-white'}`}>Slider</button>
+        <button onClick={() => setMode('side')} aria-pressed={mode === 'side'} className={`${b} ${mode === 'side' ? 'border-royal bg-royal text-white' : 'border-silver/30 text-silver hover:border-white hover:text-white'}`}>Side by side</button>
       </div>
       {onPlay && <button onClick={onPlay} aria-pressed={playing} className={`${b} border-silver/30 text-silver hover:border-white hover:text-white`}>{playing ? 'Back to before' : 'Play it'}</button>}
+      {caption && <p className="mt-1 w-full text-[12px] leading-relaxed text-silver-dim">{caption}</p>}
     </div>
   )
 }

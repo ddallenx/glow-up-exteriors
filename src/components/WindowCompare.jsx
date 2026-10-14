@@ -11,7 +11,7 @@ export function WindowCompareGrid() {
   const items = beforeAfter.length ? beforeAfter : [undefined, undefined]
   const single = items.length === 1
   return (
-    <div className={`mt-14 grid gap-8 ${single ? 'mx-auto max-w-[560px]' : 'lg:grid-cols-2'}`}>
+    <div className={`mt-14 grid gap-8 ${single ? 'mx-auto max-w-[920px]' : 'lg:grid-cols-2'}`}>
       {items.map((it, i) => <LivePhoto key={it?.before || i} item={it} seed={[2, 9][i] || i} />)}
     </div>
   )

@@ -184,7 +184,7 @@ export const heroVideo = { src: '', poster: '' }
  * While this list is empty, the site shows illustrated examples instead.
  */
 export const beforeAfter = [
-  { before: '/ba/window1-before.webp', after: '/ba/window1-after.webp', label: 'Brick-front window', aspect: 0.8 },
+  { before: '/ba/window1-before.webp', beforeSm: '/ba/window1-before-sm.webp', after: '/ba/window1-after.webp', afterSm: '/ba/window1-after-sm.webp', label: 'Brick-front window', aspect: 0.8 },
 ]
 
 /**
