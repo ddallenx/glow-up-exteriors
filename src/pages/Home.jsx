@@ -16,32 +16,61 @@ import Steps from '../components/Steps'
 import Cta from '../components/Cta'
 import { TLink } from '../components/Transition'
 
-/** First screen: just the glowing Glow Up logo. Pure CSS, so it is light on every device. */
+/** First screen: a glowing Glow Up logo behind the headline. Pure CSS, so it is light on every device. */
 function Hero() {
   const desktop = useIsDesktop()
   const reduced = useReducedMotion()
-  const hero = useRef(null), mark = useRef(null)
+  const hero = useRef(null), content = useRef(null), mark = useRef(null)
 
   useEffect(() => {
     if (reduced || !desktop) return
     const ctx = gsap.context(() => {
-      gsap.to(mark.current, { yPercent: 10, scale: 1.12, opacity: 0.4, ease: 'none', scrollTrigger: { trigger: hero.current, start: 'top top', end: 'bottom 10%', scrub: true } })
+      const st = { trigger: hero.current, start: 'top top', end: 'bottom 15%', scrub: true }
+      gsap.to(content.current, { yPercent: -10, opacity: 0, ease: 'none', scrollTrigger: st })
+      gsap.to(mark.current, { yPercent: 14, scale: 1.1, ease: 'none', scrollTrigger: st })
     }, hero)
     return () => ctx.revert()
   }, [reduced, desktop])
 
   return (
-    <section ref={hero} className="relative isolate flex min-h-[100svh] items-center justify-center overflow-hidden bg-black">
-      <h1 className="sr-only">Glow Up Exteriors — residential and commercial window washing and pressure washing</h1>
-      <div aria-hidden="true" className="glow-pulse pointer-events-none absolute left-1/2 top-1/2 h-[130vmin] w-[130vmin] rounded-full" style={{ background: 'radial-gradient(closest-side, rgba(0,122,255,.75), rgba(0,122,255,.3) 42%, transparent 70%)' }} />
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-[0.07]" style={{ backgroundImage: 'linear-gradient(rgba(160,200,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(160,200,255,1) 1px, transparent 1px)', backgroundSize: '64px 64px', maskImage: 'radial-gradient(55% 55% at 50% 50%, #000, transparent 75%)', WebkitMaskImage: 'radial-gradient(55% 55% at 50% 50%, #000, transparent 75%)' }} />
+    <section ref={hero} className="relative isolate flex min-h-[100svh] items-center overflow-hidden bg-black">
+      {/* glow field */}
+      <div aria-hidden="true" className="glow-pulse pointer-events-none absolute left-1/2 top-1/2 h-[120vmin] w-[120vmin] rounded-full" style={{ background: 'radial-gradient(closest-side, rgba(0,122,255,.7), rgba(0,122,255,.28) 42%, transparent 70%)' }} />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-[0.07]" style={{ backgroundImage: 'linear-gradient(rgba(160,200,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(160,200,255,1) 1px, transparent 1px)', backgroundSize: '64px 64px', maskImage: 'radial-gradient(60% 60% at 50% 50%, #000, transparent 75%)', WebkitMaskImage: 'radial-gradient(60% 60% at 50% 50%, #000, transparent 75%)' }} />
 
-      <div ref={mark} className="relative z-10 flex items-center justify-center px-6">
-        <img src="/logo.webp" alt="Glow Up Exteriors" draggable="false" fetchpriority="high" decoding="async" className="logo-float w-[min(78vw,560px)] select-none md:w-[min(52vmin,640px)]" style={{ filter: 'drop-shadow(0 0 26px rgba(0,122,255,.95)) drop-shadow(0 0 90px rgba(0,122,255,.75))' }} />
+      {/* the logo, large and glowing, behind the copy */}
+      <div ref={mark} aria-hidden="true" className="pointer-events-none absolute inset-0 flex items-center justify-center">
+        <img src="/logo-mark-blue.webp" alt="" draggable="false" fetchpriority="high" decoding="async" className="logo-float w-[min(70vw,460px)] max-w-none select-none opacity-[0.5] md:w-[min(54vmin,560px)]" style={{ filter: 'drop-shadow(0 0 28px rgba(0,122,255,.95)) drop-shadow(0 0 90px rgba(0,122,255,.7))' }} />
       </div>
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black to-transparent" />
 
-      <div aria-hidden="true" className="absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-3">
+      <div ref={content} className="relative z-10 mx-auto w-full max-w-[1500px] px-5 py-32 text-center md:px-10">
+        <Reveal y={20} delay={0.1}>
+          <p className="inline-flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.35em] text-silver">
+            <span className="h-px w-10 bg-royal-light" /> Residential &amp; commercial <span className="h-px w-10 bg-royal-light" />
+          </p>
+        </Reveal>
+        <Headline text="Exterior care,|*elevated*." accent="text-silver-grad" className="font-display mt-6 text-[clamp(3.4rem,11vw,10rem)] font-extrabold text-white [text-shadow:0_2px_30px_rgba(0,0,0,.85),0_4px_80px_rgba(0,0,0,.7)]" />
+        <Reveal delay={0.25} className="mx-auto mt-7 max-w-xl">
+          <p className="text-[17px] leading-relaxed text-white/90 [text-shadow:0_2px_20px_rgba(0,0,0,.9)] md:text-lg">
+            Streak-free windows and spotless exteriors for homes and businesses, delivered by three young co-founders who show up, do it right and stand behind it.
+          </p>
+        </Reveal>
+        <Reveal delay={0.35} className="mt-9 flex flex-wrap justify-center gap-3">
+          <Button to="/contact" className="max-sm:!px-5">Get a free quote</Button>
+          <Button href="#estimate" variant="ghost" arrow={false} className="max-sm:!px-5">Instant estimate</Button>
+        </Reveal>
+        <Reveal delay={0.45} className="mt-10">
+          <ul className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-[12px] font-bold uppercase tracking-[0.18em] text-silver-dim">
+            {['Free quotes', 'Residential', 'Commercial', 'Streak-free finish'].map((t) => (
+              <li key={t} className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-royal-light" />{t}</li>
+            ))}
+          </ul>
+        </Reveal>
+      </div>
+
+      <div aria-hidden="true" className="absolute bottom-6 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-3 lg:flex">
+        <span className="text-[10px] font-bold uppercase tracking-[0.35em] text-silver-dim">Scroll</span>
         <span className="scroll-cue relative block h-12 w-px overflow-hidden bg-white/20" />
       </div>
     </section>
