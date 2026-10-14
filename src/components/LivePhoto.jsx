@@ -100,9 +100,13 @@ export default function LivePhoto({ item, seed = 5, label }) {
           Live
         </span>
         <span className={`pointer-events-none absolute right-4 top-4 rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.2em] backdrop-blur transition-all duration-700 ${playing ? 'bg-royal/90 text-white' : 'bg-midnight/70 text-silver'}`}>{playing ? 'After' : 'Before'}</span>
-        <span className={`pointer-events-none absolute inset-x-0 bottom-4 text-center text-[11px] font-bold uppercase tracking-[0.3em] text-white/90 transition-opacity duration-500 ${playing ? 'opacity-0' : 'opacity-100'}`}>
-          <span className="whitespace-nowrap rounded-full bg-midnight/60 px-3 py-2 text-[10px] tracking-[0.2em] backdrop-blur sm:px-4 sm:text-[11px] sm:tracking-[0.3em]"><span className="hidden [@media(hover:hover)]:inline">Hover</span><span className="[@media(hover:hover)]:hidden">Press &amp; hold</span> to watch it wash clean</span>
-        </span>
+        <div className={`pointer-events-none absolute inset-x-0 bottom-4 flex justify-center transition-opacity duration-500 ${playing ? 'opacity-0' : 'opacity-100'}`}>
+          <span className="inline-flex items-center gap-2 whitespace-nowrap rounded-full bg-midnight/75 px-4 py-2.5 text-[11px] font-bold uppercase tracking-[0.18em] text-white backdrop-blur">
+            <svg viewBox="0 0 16 16" className="h-3.5 w-3.5 text-royal-light" fill="currentColor" aria-hidden="true"><path d="M8 1l1.6 4.4L14 7l-4.4 1.6L8 13 6.4 8.6 2 7l4.4-1.6z" /></svg>
+            <span className="hidden [@media(hover:hover)]:inline">Hover to clean</span>
+            <span className="[@media(hover:hover)]:hidden">Hold to clean</span>
+          </span>
+        </div>
       </div>
       <Toggle mode={mode} setMode={setMode} onPlay={() => (playing ? stop() : start())} playing={playing} caption={item ? (item.caption || CAPTION) : null} />
     </div>
