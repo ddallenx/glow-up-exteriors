@@ -8,7 +8,8 @@ import AnimatedWindows from '../components/AnimatedWindows'
 import Scene from '../components/Scene'
 import WindowWall from '../three/WindowWall'
 import { useReducedMotion } from '../hooks/useMedia'
-import WindowCompare from '../components/WindowCompare'
+import { WindowCompareGrid } from '../components/WindowCompare'
+import Estimator from '../components/Estimator'
 import Steps from '../components/Steps'
 import Faq from '../components/Faq'
 import Cta from '../components/Cta'
@@ -24,7 +25,7 @@ export default function WindowWashing() {
             <Reveal><p className="text-[11px] font-bold uppercase tracking-[0.35em] text-royal-light">Service 01</p></Reveal>
             <Headline text="Windows|so clear,|they *disappear*." className="font-display mt-6 text-[clamp(3rem,8.5vw,8rem)] font-extrabold" />
             <Reveal delay={0.2}><p className="mt-8 max-w-lg text-lg leading-relaxed text-silver">Professional residential and commercial window washing that removes dirt, pollen, hard-water spots and haze, so your home lets in more light and looks sharper from the curb.</p></Reveal>
-            <Reveal delay={0.3} className="mt-9 flex flex-col gap-3 sm:flex-row"><Button to="/contact">Free window quote</Button><Button href="#compare" variant="ghost" arrow={false}>See the difference</Button></Reveal>
+            <Reveal delay={0.3} className="mt-9 flex flex-col gap-3 sm:flex-row"><Button to="/contact?service=windows">Free window quote</Button><Button href="#estimate" variant="ghost" arrow={false}>Instant estimate</Button></Reveal>
           </div>
           <Reveal y={60}>
             <Scene className="aspect-[1/1] w-full sm:aspect-[6/5]" camera={[0, 0, 8.4]} fov={36} label="Interactive 3D wall of windows being squeegeed clean. Move your cursor to catch the light." fallback={<AnimatedWindows />}>
@@ -48,12 +49,11 @@ export default function WindowWashing() {
       <section id="compare" className="bg-midnight py-28 md:py-40">
         <div className="mx-auto max-w-[1500px] px-5 md:px-10">
           <SectionTitle eyebrow="Before & after" title="Watch the *haze* wash away.">Hover (or press and hold on your phone) to watch each window wash clean, or switch to the slider to compare by hand.</SectionTitle>
-          <RevealGroup className="mt-14 grid gap-6 lg:grid-cols-2" stagger={0.15}>
-            <WindowCompare index={0} seed={2} initial={35} />
-            <WindowCompare index={1} seed={9} initial={65} />
-          </RevealGroup>
+          <Reveal><WindowCompareGrid /></Reveal>
         </div>
       </section>
+
+      <Estimator />
 
       <section className="bg-midnight py-28 md:py-40">
         <div className="mx-auto grid max-w-[1500px] gap-14 px-5 md:px-10 lg:grid-cols-12">

@@ -38,6 +38,18 @@ export default function About() {
         </div>
       </section>
 
+      <section className="bg-midnight pb-20 md:pb-28">
+        <div className="mx-auto max-w-[1500px] px-5 md:px-10">
+          <Reveal y={50}>
+            <Tilt max={3} glare={false} className="relative overflow-hidden rounded-[28px] border border-silver/15 shadow-[0_50px_100px_-40px_rgba(0,122,255,.45)] md:rounded-[40px]">
+              <img src="/team/group-1280.webp" srcSet="/team/group-1280.webp 1280w, /team/group.webp 2560w" sizes="(min-width: 1500px) 1400px, 100vw" alt="Co-founders Divine, Jeremy and Colin in Glow Up Exteriors uniforms beside the company van" loading="lazy" decoding="async" draggable="false" className="aspect-[4/3] w-full object-cover object-[28%_40%] sm:aspect-[3/2] lg:aspect-[16/8]" />
+              <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+              <p className="absolute bottom-4 left-5 right-5 text-[11px] font-bold uppercase tracking-[0.3em] text-silver md:bottom-7 md:left-9">Divine · Jeremy · Colin — the three co-founders</p>
+            </Tilt>
+          </Reveal>
+        </div>
+      </section>
+
       <Marquee className="bg-transparent" words={['Community', 'Quality', 'Integrity', 'Prestige', 'Residential', 'Commercial', 'Co-Founders', 'Glow Up']} />
 
       <section className="bg-midnight py-24 md:py-36">

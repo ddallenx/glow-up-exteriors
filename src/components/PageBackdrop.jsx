@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useTier } from '../hooks/useTier'
 import { SceneBoundary } from './SceneBoundary'
@@ -18,11 +18,19 @@ export default function PageBackdrop() {
   const { pathname } = useLocation()
   const { tier, full, reduced } = useTier()
   const kind = KIND[pathname]
+  const [paused, setPaused] = useState(false)
+  useEffect(() => {
+    const on = (e) => setPaused(!!e.detail)
+    const vis = () => setPaused(document.hidden)
+    window.addEventListener('gu:tx', on)
+    document.addEventListener('visibilitychange', vis)
+    return () => { window.removeEventListener('gu:tx', on); document.removeEventListener('visibilitychange', vis) }
+  }, [])
   if (!kind || tier !== 'full') return null
   return (
-    <div aria-hidden="true" className={`pointer-events-none fixed inset-0 -z-10 ${kind === 'city' ? 'bg-midnight/50' : 'bg-midnight/15'}`}>
+    <div aria-hidden="true" className={`pointer-events-none fixed inset-0 -z-10 ${kind === 'city' ? 'bg-midnight/50' : 'bg-midnight/15'} ${kind === 'orbit' ? 'opacity-50' : ''}`}>
       <SceneBoundary fallback={null}>
-        <Suspense fallback={null}><Backdrop kind={kind} full={full} reduced={reduced} /></Suspense>
+        <Suspense fallback={null}><Backdrop kind={kind} full={full} reduced={reduced} paused={paused} /></Suspense>
       </SceneBoundary>
     </div>
   )

@@ -9,37 +9,21 @@ import WashReveal from '../components/WashReveal'
 import Steps from '../components/Steps'
 import Faq from '../components/Faq'
 import Cta from '../components/Cta'
-import Scene from '../components/Scene'
-import WashSlab from '../three/WashSlab'
-import { useRef, useState } from 'react'
 import { useReducedMotion } from '../hooks/useMedia'
 
 export default function PressureWashing() {
   useDocumentTitle('Pressure Washing')
   const reduced = useReducedMotion()
-  const api = useRef(null)
-  const [pct, setPct] = useState(0)
   return (
     <>
       <section className="relative isolate overflow-hidden bg-midnight pb-16 pt-36 md:pb-24 md:pt-44">
-        <div className="mx-auto grid max-w-[1500px] items-center gap-10 px-5 md:px-10 lg:grid-cols-12">
-          <div className="lg:col-span-6">
+        <div className="mx-auto max-w-[1500px] px-5 md:px-10">
+          <div className="max-w-3xl">
             <Reveal><p className="text-[11px] font-bold uppercase tracking-[0.35em] text-royal-light">Service 02</p></Reveal>
             <Headline text="Wash away|the *years*." className="font-display mt-6 text-[clamp(3.2rem,9vw,9rem)] font-extrabold" />
             <Reveal delay={0.2}><p className="mt-8 max-w-lg text-lg leading-relaxed text-silver">Algae, mildew, oil and weather leave a dull film on everything outside. Our pressure washing brings concrete, pavers, siding and decks back to the way they looked when they were new.</p></Reveal>
             <Reveal delay={0.3} className="mt-9"><Button to="/contact">Free pressure washing quote</Button></Reveal>
           </div>
-          <Reveal y={60} className="lg:col-span-6">
-            <Scene className="aspect-[5/4] w-full overflow-hidden rounded-[32px] border border-silver/15 bg-gradient-to-b from-ink/60 to-navy/30" camera={[0, 0.6, 7.6]} fov={38} label="Interactive 3D paver slab. Move your pointer over it to pressure wash it clean." fallback={null}>
-              {({ full }) => <WashSlab api={api} onProgress={setPct} full={full} reduced={reduced} />}
-            </Scene>
-            <div className="mt-4 flex flex-wrap items-center gap-3">
-              <div className="h-1.5 min-w-[120px] flex-1 overflow-hidden rounded-full bg-white/10" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label="3D slab cleaning progress"><div className="h-full rounded-full bg-gradient-to-r from-royal to-royal-light transition-[width] duration-300" style={{ width: `${pct}%` }} /></div>
-              <span className="w-24 text-xs font-bold uppercase tracking-[0.2em] text-silver" aria-live="polite">{pct >= 100 ? 'Spotless ✦' : `${pct}% clean`}</span>
-              <button onClick={() => api.current?.auto()} className="min-h-[44px] rounded-full border border-silver/25 px-5 text-sm font-bold text-silver transition-colors hover:border-white hover:text-white">Wash it for me</button>
-              <button onClick={() => api.current?.reset()} className="min-h-[44px] rounded-full border border-silver/25 px-5 text-sm font-bold text-silver transition-colors hover:border-white hover:text-white">Reset</button>
-            </div>
-          </Reveal>
         </div>
       </section>
 

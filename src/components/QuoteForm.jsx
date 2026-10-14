@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { site } from '../config/site'
+import { estimate, money } from '../lib/pricing'
 import { gsap } from '../lib/gsap'
 import Button from './Button'
 
@@ -12,7 +13,9 @@ export default function QuoteForm() {
   const [errors, setErrors] = useState({})
   const [status, setStatus] = useState('idle') // idle | sending | sent | mailto | error
   const [params] = useSearchParams()
-  const [service, setService] = useState('Both')
+  const [service, setService] = useState(params.get('service') === 'windows' ? 'Window washing' : 'Both')
+  const [windows, setWindows] = useState(params.get('windows') || '')
+  const [sides, setSides] = useState(params.get('sides') === 'both' ? 'Inside & outside' : 'Outside only')
   const [property, setProperty] = useState(params.get('type') === 'commercial' ? 'Commercial' : 'Residential')
   const commercial = property === 'Commercial'
   const form = useRef(null)
@@ -31,6 +34,10 @@ export default function QuoteForm() {
     const data = Object.fromEntries(new FormData(form.current))
     data.service = service
     data.property = property
+    data.windows = windows
+    data.sides = sides
+    const est = windows && service !== 'Pressure washing' ? estimate(windows, sides === 'Inside & outside') : null
+    data.estimate = est ? `${money(est.low)} – ${money(est.high)}` : ''
     if (data.company) return // honeypot
     const e = validate(data)
     setErrors(e)
@@ -38,7 +45,7 @@ export default function QuoteForm() {
       form.current.querySelector('[aria-invalid="true"]')?.focus()
       return
     }
-    const summary = `New quote request — ${site.name}\n\nName: ${data.name}\nPhone: ${data.phone}\nEmail: ${data.email}\nAddress/area: ${data.address}\nProperty: ${data.property}${data.business ? ' — ' + data.business : ''}\nService: ${data.service}\nProperty type: ${data.home}\nTiming: ${data.timing}\n\nDetails:\n${data.message || '(none)'}`
+    const summary = `New quote request — ${site.name}\n\nName: ${data.name}\nPhone: ${data.phone}\nEmail: ${data.email}\nAddress/area: ${data.address}\nProperty: ${data.property}${data.business ? ' — ' + data.business : ''}\nService: ${data.service}${data.windows && service !== 'Pressure washing' ? `\nWindows: ${data.windows} (${data.sides}) — estimate ${data.estimate}` : ''}\nProperty type: ${data.home}\nTiming: ${data.timing}\n\nDetails:\n${data.message || '(none)'}`
     if (site.formEndpoint) {
       setStatus('sending')
       try {
@@ -120,6 +127,23 @@ export default function QuoteForm() {
             {['As soon as possible', 'Within 2 weeks', 'This month', 'Just getting a price'].map((o) => <option key={o} className="bg-navy">{o}</option>)}
           </select>
         </div>
+        {service !== 'Pressure washing' && (
+          <>
+            <div>
+              <label className={label} htmlFor="windows">Approx. number of windows <span className="font-medium normal-case tracking-normal text-silver-dim">(optional)</span></label>
+              <input id="windows" name="windows" inputMode="numeric" value={windows} onChange={(e) => setWindows(e.target.value.replace(/\D/g, '').slice(0, 3))} className={field} placeholder="e.g. 24" />
+            </div>
+            <div>
+              <label className={label} htmlFor="sides">Glass to clean</label>
+              <select id="sides" name="sides" value={sides} onChange={(e) => setSides(e.target.value)} className={`${field} appearance-none`}>
+                <option className="bg-navy">Outside only</option><option className="bg-navy">Inside &amp; outside</option>
+              </select>
+            </div>
+            {windows && estimate(windows, sides === 'Inside & outside').n > 0 && (
+              <p className="rounded-2xl border border-royal/40 bg-royal/10 px-5 py-4 text-sm font-semibold text-white md:col-span-2">Estimate: {money(estimate(windows, sides === 'Inside & outside').low)} – {money(estimate(windows, sides === 'Inside & outside').high)}. <span className="font-medium text-silver">We confirm the exact price in your free quote.</span></p>
+            )}
+          </>
+        )}
         <div className="md:col-span-2">
           <label className={label} htmlFor="message">Anything we should know? <span className="font-medium normal-case tracking-normal text-silver-dim">(optional)</span></label>
           <textarea id="message" name="message" rows={4} className={`${field} resize-none`} placeholder="Number of windows, problem areas, access notes, hours…" />

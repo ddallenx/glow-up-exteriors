@@ -1,30 +1,23 @@
-import { createContext, lazy, Suspense, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { gsap, ScrollTrigger } from '../lib/gsap'
 import { getLenis, pageState, scrollToTop } from '../lib/scroll'
 import { useReducedMotion } from '../hooks/useMedia'
-import { useTier } from '../hooks/useTier'
-import { KIND, LABEL, tx } from '../lib/tx'
 import { introWanted } from '../lib/intro'
 import { LogoMark } from './Logo'
 
 const Ctx = createContext({ go: () => {} })
 export const useTransition = () => useContext(Ctx)
 
-const PANELS = 4
-const loadTx = () => import('../three/TransitionScene')
-const TxScene = lazy(loadTx)
+const PANELS = 5
+
+/** Tell heavy canvases to rest while the curtain moves, so the transition never competes for the GPU. */
+const announce = (busy) => window.dispatchEvent(new CustomEvent('gu:tx', { detail: busy }))
 
 export function TransitionProvider({ children }) {
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const reduced = useReducedMotion()
-  const { tier } = useTier()
-  const use3d = tier === 'full'
-  const [mount3d, setMount3d] = useState(false)
-  const [active, setActive] = useState(false)
-  const [kind, setKind] = useState('frames')
-  const label3d = useRef(null)
   const root = useRef(null)
   const busy = useRef(false)
   const path = useRef(pathname)
@@ -32,65 +25,26 @@ export function TransitionProvider({ children }) {
 
   const panels = () => root.current.querySelectorAll('[data-panel]')
 
-  // Opening curtain on first load
+  // Opening curtain on first load (the cinematic intro replaces it when it plays)
   useLayoutEffect(() => {
     if (!root.current) return
-    if (introWanted) {
+    if (introWanted || reduced) {
       gsap.set(root.current, { display: 'none' })
+      if (reduced) pageState.delay = 0
       return
     }
-    if (reduced) {
-      gsap.set(root.current, { display: 'none' })
-      pageState.delay = 0
-      return
-    }
-    pageState.delay = 1.0
+    pageState.delay = 0.9
     const ctx = gsap.context(() => {
       gsap.set(root.current, { display: 'block' })
       gsap.set(panels(), { yPercent: 0 })
-      gsap.set('[data-curtain-logo]', { opacity: 1, y: 0 })
+      gsap.set('[data-curtain-logo]', { opacity: 1, scale: 1 })
       gsap
-        .timeline({ delay: 0.5, onComplete: () => { gsap.set(root.current, { display: 'none' }); pageState.delay = 0.1 } })
-        .to('[data-curtain-logo]', { opacity: 0, y: -20, duration: 0.5, ease: 'power2.in' })
-        .to(panels(), { yPercent: -100, duration: 0.9, ease: 'expo.inOut', stagger: 0.07 }, '-=0.1')
+        .timeline({ delay: 0.45, onComplete: () => { gsap.set(root.current, { display: 'none' }); pageState.delay = 0.1 } })
+        .to('[data-curtain-logo]', { opacity: 0, scale: 1.06, duration: 0.4, ease: 'power2.in' })
+        .to(panels(), { yPercent: -100, duration: 0.8, ease: 'power4.inOut', stagger: 0.05 }, '-=0.1')
     }, root)
     return () => ctx.revert()
   }, [reduced])
-
-  // Warm up the 3D transition (chunk + shader compile) once the page is idle.
-  useEffect(() => {
-    if (!use3d) return
-    const idle = window.requestIdleCallback || ((f) => setTimeout(f, 1500))
-    const id = idle(() => { setTimeout(() => loadTx().then(() => setMount3d(true)), introWanted ? 6500 : 0) }, { timeout: 1800 })
-    return () => window.cancelIdleCallback?.(id)
-  }, [use3d])
-
-  const go3d = useCallback((to, target) => {
-    busy.current = true
-    tx.kind = KIND[target] || 'frames'
-    tx.p = 0; tx.last = 0
-    setKind(tx.kind)
-    setActive(true)
-    if (label3d.current) label3d.current.textContent = LABEL[target] || ''
-    requestAnimationFrame(() => {
-      gsap.timeline({ onComplete: () => { setActive(false); tx.p = 0; busy.current = false; pageState.delay = 0.1; gsap.set('#main', { clearProps: 'all' }); requestAnimationFrame(() => ScrollTrigger.refresh()) } })
-        .to('#main', { scale: 0.84, opacity: 0.15, rotateX: 8, z: -280, filter: 'blur(8px)', transformPerspective: 1400, transformOrigin: '50% 40%', duration: 1.1, ease: 'power3.in' }, 0)
-        .to(tx, { p: 0.5, duration: 1.1, ease: 'power3.in' }, 0)
-        .to('[data-tx-label]', { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: 'power3.out' }, 0.55)
-        .add(() => {
-          pageState.delay = 0.55
-          navigate(to)
-          scrollToTop()
-          requestAnimationFrame(() => {
-            gsap.set('#main', { scale: 1.16, opacity: 0, rotateX: -7, z: 260, filter: 'blur(10px)', transformPerspective: 1400, transformOrigin: '50% 40%' })
-            gsap.to('#main', { scale: 1, opacity: 1, rotateX: 0, z: 0, filter: 'blur(0px)', duration: 1.7, ease: 'expo.out', delay: 0.25 })
-            ScrollTrigger.refresh()
-          })
-        })
-        .to(tx, { p: 1, duration: 1.45, ease: 'power3.out' }, '+=0.18')
-        .to('[data-tx-label]', { opacity: 0, y: -14, duration: 0.35, ease: 'power2.in' }, '-=0.85')
-    })
-  }, [navigate])
 
   const go = useCallback(
     (to) => {
@@ -98,35 +52,38 @@ export function TransitionProvider({ children }) {
       const [target] = to.split('#')
       if (target === path.current) {
         const l = getLenis()
-        l ? l.scrollTo(0, { duration: 1.4 }) : window.scrollTo({ top: 0, behavior: 'smooth' })
+        l ? l.scrollTo(0, { duration: 1.2 }) : window.scrollTo({ top: 0, behavior: 'smooth' })
         return
       }
       if (reduced) {
-        // Accessible: a short cross-fade, no motion.
-        gsap.to('#main', { opacity: 0, duration: 0.18, onComplete: () => {
+        gsap.to('#main', { opacity: 0, duration: 0.15, onComplete: () => {
           navigate(to); scrollToTop()
-          requestAnimationFrame(() => gsap.fromTo('#main', { opacity: 0 }, { opacity: 1, duration: 0.25, clearProps: 'opacity' }))
+          requestAnimationFrame(() => gsap.fromTo('#main', { opacity: 0 }, { opacity: 1, duration: 0.2, clearProps: 'opacity' }))
         } })
         return
       }
-      if (use3d && mount3d) { go3d(to, target); return }
       busy.current = true
+      announce(true)
       gsap.set(root.current, { display: 'block' })
       gsap
-        .timeline({ onComplete: () => { gsap.set(root.current, { display: 'none' }); busy.current = false; pageState.delay = 0.1; requestAnimationFrame(() => ScrollTrigger.refresh()) } })
-        .fromTo(panels(), { yPercent: 100 }, { yPercent: 0, duration: 0.7, ease: 'expo.inOut', stagger: 0.06 })
-        .fromTo('[data-curtain-logo]', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' }, '-=0.35')
+        .timeline({ onComplete: () => { gsap.set(root.current, { display: 'none' }); gsap.set('#main', { clearProps: 'transform,opacity' }); busy.current = false; announce(false); pageState.delay = 0.1; requestAnimationFrame(() => ScrollTrigger.refresh()) } })
+        // Cover: panels rise while the old page eases back (transform + opacity only, both GPU-composited)
+        .fromTo(panels(), { yPercent: 100 }, { yPercent: 0, duration: 0.55, ease: 'power4.inOut', stagger: 0.045 })
+        .to('#main', { scale: 0.97, opacity: 0.6, duration: 0.55, ease: 'power2.in', transformOrigin: '50% 30%' }, 0)
+        .fromTo('[data-curtain-logo]', { opacity: 0, scale: 0.94 }, { opacity: 1, scale: 1, duration: 0.3, ease: 'power3.out' }, '-=0.3')
         .add(() => {
-          pageState.delay = 0.45
+          pageState.delay = 0.35
           navigate(to)
           scrollToTop()
-          ScrollTrigger.refresh()
+          gsap.set('#main', { scale: 1.03, opacity: 0.4, transformOrigin: '50% 30%' })
         })
-        .to({}, { duration: 0.25 })
-        .to('[data-curtain-logo]', { opacity: 0, y: -16, duration: 0.3, ease: 'power2.in' })
-        .to(panels(), { yPercent: -100, duration: 0.8, ease: 'expo.inOut', stagger: 0.06 }, '-=0.15')
+        .to({}, { duration: 0.12 })
+        // Reveal: panels lift away to show the new page settling in
+        .to('[data-curtain-logo]', { opacity: 0, scale: 1.06, duration: 0.25, ease: 'power2.in' })
+        .to(panels(), { yPercent: -100, duration: 0.6, ease: 'power4.inOut', stagger: 0.045 }, '-=0.1')
+        .to('#main', { scale: 1, opacity: 1, duration: 0.7, ease: 'power3.out' }, '<0.05')
     },
-    [navigate, reduced, use3d, mount3d, go3d],
+    [navigate, reduced],
   )
 
   useEffect(() => { if (!busy.current) ScrollTrigger.refresh() }, [pathname])
@@ -134,28 +91,18 @@ export function TransitionProvider({ children }) {
   return (
     <Ctx.Provider value={{ go }}>
       {children}
-      {mount3d && (
-        <Suspense fallback={null}>
-          <TxScene active={active} kind={kind} mobile={tier === 'mobile'} />
-        </Suspense>
-      )}
-      <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-[101] flex items-center justify-center">
-        <div data-tx-label className="flex translate-y-4 scale-90 flex-col items-center gap-2 opacity-0 drop-shadow-[0_0_40px_rgba(0,122,255,.8)]">
-          <span ref={label3d} className="serif-accent mt-[34vh] text-[clamp(2rem,6vw,4rem)] text-white" />
-        </div>
-      </div>
       <div ref={root} aria-hidden="true" className="pointer-events-none fixed inset-0 z-[100]" style={{ display: 'none' }}>
         <div className="absolute inset-0 flex">
           {Array.from({ length: PANELS }).map((_, i) => (
             <div
               key={i}
               data-panel
-              className="h-full flex-1"
+              className="h-full flex-1 will-change-transform [backface-visibility:hidden]"
               style={{ background: i % 2 ? 'linear-gradient(180deg,#05070d,#000000)' : 'linear-gradient(180deg,#0a0e1a,#000000)', marginRight: -1 }}
             />
           ))}
         </div>
-        <div data-curtain-logo className="absolute inset-0 flex flex-col items-center justify-center gap-4 opacity-0">
+        <div data-curtain-logo className="absolute inset-0 flex items-center justify-center opacity-0 will-change-transform">
           <LogoMark className="h-28 md:h-36" />
         </div>
       </div>

@@ -4,6 +4,7 @@ import * as THREE from 'three'
 import Studio from './Studio'
 import GlassOrb from './GlassOrb'
 import { usePointer } from '../hooks/usePointer'
+import Throttle from './Throttle'
 
 const rnd = (seed) => () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646 }
 
@@ -174,20 +175,22 @@ function Content({ kind, full, reduced }) {
     case 'spray': return <Spray jets={3} per={full ? 90 : 50} mist={full ? 70 : 36} reduced={reduced} />
     case 'particles': return <Particles count={full ? 420 : 220} reduced={reduced} />
     case 'city': return <><Studio res={128} /><fog attach="fog" args={['#000000', 18, 58]} /><City reduced={reduced} /></>
-    case 'orbit': return <group position={[full ? 5.6 : 0.6, full ? 1.8 : 3, -3]} scale={full ? 1.25 : 1}><GlassOrb full={full} reduced={reduced} calm /></group>
+    case 'orbit': return <group position={[full ? 6.4 : 0.6, full ? 2.9 : 3, -5]} scale={full ? 1.0 : 1}><GlassOrb full={full} reduced={reduced} calm /></group>
     default: return null
   }
 }
 
-export default function Backdrop({ kind, full, reduced }) {
+export default function Backdrop({ kind, full, reduced, paused }) {
   return (
     <Canvas
-      dpr={[1, full ? 1.5 : 1.15]}
+      dpr={1}
+      frameloop={paused ? 'never' : 'demand'}
       camera={{ fov: 50, near: 0.1, far: 120, position: [0, 0, 10] }}
-      gl={{ alpha: true, antialias: false, powerPreference: 'high-performance' }}
+      gl={{ alpha: true, antialias: false, depth: true, stencil: false, powerPreference: 'high-performance' }}
       style={{ position: 'fixed', inset: 0, zIndex: -1, pointerEvents: 'none' }}
       onCreated={({ gl }) => { gl.setClearColor(0, 0); gl.toneMapping = THREE.ACESFilmicToneMapping }}
     >
+      <Throttle fps={30} />
       <Drift amount={kind === 'orbit' ? 0.4 : 1} />
       <Content kind={kind} full={full} reduced={reduced} />
     </Canvas>

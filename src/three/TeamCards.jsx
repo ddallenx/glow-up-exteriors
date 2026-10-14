@@ -72,9 +72,9 @@ function Photo({ person }) {
   const tex = useTexture(person.photo)
   const ar = tex.image.width / tex.image.height
   const full = person.crop === 'full'
-  const h = full ? 3.75 : 2.4 / ar
-  const w = h * ar
-  const bottom = full ? -1.55 : -1.1
+  const w = full ? 1.5 : 2.05
+  const h = w / ar
+  const bottom = full ? -1.55 : -1.17
   return (
     <mesh position={[0, bottom + h / 2, 0.2]} renderOrder={2}>
       <planeGeometry args={[w, h]} />
