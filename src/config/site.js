@@ -185,6 +185,8 @@ export const heroVideo = { src: '', poster: '' }
  */
 export const beforeAfter = [
   { before: '/ba/window1-before.webp', beforeSm: '/ba/window1-before-sm.webp', after: '/ba/window1-after.webp', afterSm: '/ba/window1-after-sm.webp', label: 'Brick-front window', aspect: 0.8 },
+  { before: '/ba/window2-before.webp', beforeSm: '/ba/window2-before-sm.webp', after: '/ba/window2-after.webp', afterSm: '/ba/window2-after-sm.webp', label: 'Shuttered window', aspect: 0.8 },
+  { before: '/ba/window3-before.webp', beforeSm: '/ba/window3-before-sm.webp', after: '/ba/window3-after.webp', afterSm: '/ba/window3-after-sm.webp', label: 'Garden-front window', aspect: 0.8 },
 ]
 
 /**

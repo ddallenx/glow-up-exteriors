@@ -11,7 +11,7 @@ import Button from '../components/Button'
 import Marquee from '../components/Marquee'
 import SectionTitle from '../components/SectionTitle'
 import AnimatedWindows from '../components/AnimatedWindows'
-import WindowCompare from '../components/WindowCompare'
+import { WindowCompareShowcase } from '../components/WindowCompare'
 import Steps from '../components/Steps'
 import Cta from '../components/Cta'
 import { TLink } from '../components/Transition'
@@ -167,11 +167,11 @@ function Home() {
         <div className="mx-auto grid max-w-[1500px] items-center gap-14 px-5 md:px-10 lg:grid-cols-12">
           <div className="lg:col-span-6">
             <SectionTitle eyebrow="Real results" title="Same window.|The *difference*.">
-              A real window we cleaned, shot from the same spot. Hover over the photo, or press and hold on your phone, to watch it clear.
+              Real windows we cleaned, shot from the same spot. Pick a job, then hover over the photo, or press and hold on your phone, to watch it clear.
             </SectionTitle>
             <Reveal delay={0.15} className="mt-10"><Button to="/window-washing" variant="ghost">See window washing</Button></Reveal>
           </div>
-          <Reveal className="lg:col-span-6"><WindowCompare index={0} seed={5} /></Reveal>
+          <Reveal className="lg:col-span-6"><WindowCompareShowcase seed={5} /></Reveal>
         </div>
       </section>
 
