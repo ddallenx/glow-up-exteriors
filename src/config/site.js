@@ -13,10 +13,10 @@ export const site = {
   tagline: 'Residential & commercial window washing and pressure washing',
 
   // ── CONTACT DETAILS (placeholders — replace with your real info) ──
-  phone: '(518) 816-6878',
-  email: 'divineallen6@gmail.com',
+  phone: '(719) 684-4456',
+  email: 'cmhumlicek007@gmail.com',
   serviceArea: 'Local residential service — ask us if we cover your street',
-  hours: 'Mon–Sat · 8am – 6pm',
+  hours: 'Mon–Sat · 8am – 8pm',
 
   // Leave a social handle as '' to hide its link.
   social: {
