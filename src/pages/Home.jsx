@@ -39,8 +39,8 @@ function Hero() {
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-[0.07]" style={{ backgroundImage: 'linear-gradient(rgba(160,200,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(160,200,255,1) 1px, transparent 1px)', backgroundSize: '64px 64px', maskImage: 'radial-gradient(60% 60% at 50% 50%, #000, transparent 75%)', WebkitMaskImage: 'radial-gradient(60% 60% at 50% 50%, #000, transparent 75%)' }} />
 
       {/* the logo, large and glowing, behind the copy */}
-      <div ref={mark} aria-hidden="true" className="pointer-events-none absolute inset-0 flex items-center justify-center">
-        <img src="/logo-mark-blue.webp" alt="" draggable="false" fetchpriority="high" decoding="async" className="logo-float w-[min(70vw,460px)] max-w-none select-none opacity-[0.5] md:w-[min(54vmin,560px)]" style={{ filter: 'drop-shadow(0 0 28px rgba(0,122,255,.95)) drop-shadow(0 0 90px rgba(0,122,255,.7))' }} />
+      <div ref={mark} aria-hidden="true" className="pointer-events-none absolute inset-0 flex items-center justify-center md:-translate-y-[19vh]">
+        <img src="/logo-mark-blue.webp" alt="" draggable="false" fetchpriority="high" decoding="async" className="logo-float w-[min(94vw,640px)] max-w-none select-none opacity-[0.6] md:w-[min(100vmin,1050px)]" style={{ filter: 'drop-shadow(0 0 28px rgba(0,122,255,.95)) drop-shadow(0 0 90px rgba(0,122,255,.7))' }} />
       </div>
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black to-transparent" />
 

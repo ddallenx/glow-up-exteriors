@@ -11,7 +11,7 @@ export default function Footer() {
       <div className="mx-auto max-w-[1500px] px-5 md:px-10">
         <div className="grid gap-14 border-t border-silver/15 pt-14 md:grid-cols-12">
           <div className="md:col-span-5">
-            <Logo className="!h-14 md:!h-16" />
+            <Logo className="!h-16 md:!h-20" />
             <p className="mt-6 max-w-sm text-[15px] leading-relaxed text-silver-dim">{site.tagline}. Young, local and obsessed with the details.</p>
           </div>
           <div className="md:col-span-3">
