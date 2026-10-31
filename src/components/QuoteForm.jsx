@@ -74,14 +74,20 @@ export default function QuoteForm() {
         Details: data.message || undefined,
         'Sent from': window.location.href,
       }
-      try {
+      const sendEmail = async () => {
         const res = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(lead) })
         const body = await res.json().catch(() => ({}))
         if (!res.ok || body.success === false || body.success === 'false') throw new Error(body.message || 'bad')
-        setStatus('sent')
-      } catch {
-        setStatus('error')
       }
+      // Text alert through Quo (api/lead.js). Does nothing until Quo is set up in Vercel.
+      const sendText = async () => {
+        const res = await fetch('/api/lead', { method: 'POST', keepalive: true, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...data, windows: windowsLine, company: undefined }) })
+        const body = await res.json().catch(() => ({}))
+        if (!res.ok || !body.ok) throw new Error('not sent')
+      }
+      // The lead counts as delivered if either the email or the text went through.
+      const [email, text] = await Promise.allSettled([sendEmail(), sendText()])
+      setStatus(email.status === 'fulfilled' || text.status === 'fulfilled' ? 'sent' : 'error')
     } else {
       window.location.href = `mailto:${site.email}?subject=${encodeURIComponent('Free quote request — ' + data.service)}&body=${encodeURIComponent(summary)}`
       setStatus('mailto')
@@ -186,7 +192,7 @@ export default function QuoteForm() {
       </div>
 
       <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <p className="max-w-xs text-sm text-silver-dim">Free, no-obligation quote. We only use your details to reply to you.</p>
+        <p className="max-w-xs text-sm text-silver-dim">Free, no-obligation quote. By sending, you agree we may call or text you about your quote. Msg &amp; data rates may apply; reply STOP to opt out.</p>
         <Button type="submit" disabled={status === 'sending'} arrow={status !== 'sending'}>{status === 'sending' ? 'Sending…' : 'Request free quote'}</Button>
       </div>
       {status === 'error' && (
