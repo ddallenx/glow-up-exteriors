@@ -11,6 +11,7 @@ const KIND = {
   '/commercial': 'city',
   '/about': 'particles',
   '/contact': 'orbit',
+  '/quote': 'orbit',
 }
 
 /** One persistent fixed canvas behind the page; the scene swaps per route. Skipped on weak / reduced-motion devices. */

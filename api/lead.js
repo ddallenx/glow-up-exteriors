@@ -1,20 +1,23 @@
 /**
- * New-lead text alerts through Quo (quo.com, formerly OpenPhone).
+ * New-lead alerts. The quote form POSTs each request here, and this function
+ * notifies the team on every channel that is switched on:
  *
- * The quote form POSTs each request here. This function sends texts FROM your
- * Quo business number:
- *   1. An alert to each team phone in QUO_ALERT_TO ("New lead: name, phone, service…").
- *   2. (optional) An instant "got your request" text to the customer, so the
- *      conversation starts in your Quo inbox and replies notify the whole team.
+ * 1. PUSH NOTIFICATIONS (ntfy, free, works now, no carrier registration)
+ *    Each lead pops up on your phone's lock screen with Call / Text buttons.
+ *    Vercel → Settings → Environment Variables:
+ *      NTFY_TOPIC    a long secret topic name (anyone who knows it can read your leads,
+ *                    so never put it in this public code; keep it in Vercel only)
+ *    On each phone: install the free "ntfy" app → + → subscribe to that topic.
  *
- * Set these in Vercel → Project → Settings → Environment Variables, then redeploy:
- *   QUO_API_KEY      Quo → Settings → API → Generate API key (Owner/Admin only)
- *   QUO_FROM         Your Quo number, e.g. +12142392420
- *   QUO_ALERT_TO     Team cell numbers to alert, comma-separated, e.g. +12145550101,+14695550102
- *   QUO_AUTO_REPLY   "true" to text the customer back instantly (default off)
+ * 2. TEXT MESSAGES through Quo (quo.com), once US carrier registration is approved:
+ *      QUO_API_KEY      Quo → Settings → API → Generate API key (Owner/Admin only)
+ *      QUO_FROM         Your Quo number, e.g. +12142392420
+ *      QUO_ALERT_TO     Team cell numbers to text, comma-separated
+ *      QUO_AUTO_REPLY   "true" to text the customer back instantly (default off)
+ *    Quo also needs prepaid API credits (about $0.01 per text).
  *
- * Quo requires US carrier registration and prepaid API credits (about $0.01 per text).
- * If the variables are missing, this function does nothing and the email lead still arrives.
+ * Channels that are not configured are skipped. The email lead (FormSubmit) is sent
+ * separately by the form, so nothing is lost if this function does nothing.
  */
 
 const QUO_URL = 'https://api.quo.com/v1/messages'
@@ -28,7 +31,7 @@ const toE164 = (s = '') => {
 
 const clip = (s, n) => String(s || '').replace(/\s+/g, ' ').trim().slice(0, n)
 
-async function sendText(apiKey, from, to, content) {
+async function quoText(apiKey, from, to, content) {
   const res = await fetch(QUO_URL, {
     method: 'POST',
     headers: { Authorization: apiKey, 'Content-Type': 'application/json' },
@@ -37,13 +40,30 @@ async function sendText(apiKey, from, to, content) {
   if (!res.ok) throw new Error(`Quo ${res.status}: ${clip(await res.text().catch(() => ''), 200)}`)
 }
 
+async function ntfyPush(server, topic, { title, message, phone }) {
+  const res = await fetch(server, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      topic,
+      title,
+      message,
+      priority: 5,
+      tags: ['house', 'sparkles'],
+      click: `tel:${phone}`,
+      actions: [
+        { action: 'view', label: 'Call', url: `tel:${phone}`, clear: true },
+        { action: 'view', label: 'Text', url: `sms:${phone}`, clear: true },
+      ],
+    }),
+  })
+  if (!res.ok) throw new Error(`ntfy ${res.status}: ${clip(await res.text().catch(() => ''), 200)}`)
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ ok: false })
 
-  const { QUO_API_KEY, QUO_FROM, QUO_ALERT_TO = '', QUO_AUTO_REPLY } = process.env
-  const from = toE164(QUO_FROM)
-  if (!QUO_API_KEY || !from) return res.status(200).json({ ok: false, skipped: 'Quo not configured' })
-
+  const env = process.env
   const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body || {}
   if (body.company) return res.status(200).json({ ok: true }) // honeypot: pretend success for bots
 
@@ -51,8 +71,8 @@ export default async function handler(req, res) {
   const phone = toE164(body.phone)
   if (!name || !phone) return res.status(400).json({ ok: false, error: 'Missing name or phone' })
 
-  const alert = [
-    `New ${clip(body.property, 20).toLowerCase() || 'website'} lead: ${name}`,
+  const kind = clip(body.property, 20).toLowerCase() || 'website'
+  const details = [
     `Phone: ${clip(body.phone, 30)}`,
     `Service: ${clip(body.service, 40)}`,
     body.windows && `Windows: ${clip(body.windows, 80)}`,
@@ -62,17 +82,34 @@ export default async function handler(req, res) {
     body.message && `Notes: ${clip(body.message, 160)}`,
   ].filter(Boolean).join('\n')
 
-  const team = QUO_ALERT_TO.split(',').map(toE164).filter(Boolean).slice(0, 5)
-  const jobs = team.map((to) => sendText(QUO_API_KEY, from, to, alert))
+  const jobs = []
 
-  if (QUO_AUTO_REPLY === 'true') {
-    const first = name.split(' ')[0]
-    jobs.push(sendText(QUO_API_KEY, from, phone,
-      `Hi ${first}, this is Glow Up Exteriors! We got your quote request and will text you shortly with your price. Questions? Just reply here. Reply STOP to opt out.`))
+  // 1. Push notification
+  if (env.NTFY_TOPIC) {
+    jobs.push(ntfyPush(env.NTFY_SERVER || 'https://ntfy.sh', env.NTFY_TOPIC, {
+      title: `New ${kind} lead: ${name}`,
+      message: details,
+      phone,
+    }))
   }
+
+  // 2. Quo texts
+  const from = toE164(env.QUO_FROM)
+  if (env.QUO_API_KEY && from) {
+    const alert = `New ${kind} lead: ${name}\n${details}`
+    const team = (env.QUO_ALERT_TO || '').split(',').map(toE164).filter(Boolean).slice(0, 5)
+    team.forEach((to) => jobs.push(quoText(env.QUO_API_KEY, from, to, alert)))
+    if (env.QUO_AUTO_REPLY === 'true') {
+      const first = name.split(' ')[0]
+      jobs.push(quoText(env.QUO_API_KEY, from, phone,
+        `Hi ${first}, this is Glow Up Exteriors! We got your quote request and will text you shortly with your price. Questions? Just reply here. Reply STOP to opt out.`))
+    }
+  }
+
+  if (!jobs.length) return res.status(200).json({ ok: false, skipped: 'No alert channels configured' })
 
   const results = await Promise.allSettled(jobs)
   const failed = results.filter((r) => r.status === 'rejected').map((r) => r.reason.message)
-  if (failed.length) console.error('Quo send failures:', failed)
-  return res.status(200).json({ ok: failed.length < results.length && results.length > 0, sent: results.length - failed.length, failed: failed.length })
+  if (failed.length) console.error('Lead alert failures:', failed)
+  return res.status(200).json({ ok: failed.length < results.length, sent: results.length - failed.length, failed: failed.length })
 }

@@ -10,7 +10,8 @@ Open **`src/config/site.js`**. Change the phone, email, hours, service area, soc
 services text, FAQs and team bios there. Commit and push — Vercel redeploys automatically.
 
 - **Quote form:** requests are emailed to `leadEmail` through [FormSubmit](https://formsubmit.co) (free, no account). The first submission sends that inbox an "Activate form" email; click the link once and every lead after that arrives instantly, with name, phone, service, window estimate and how they heard about you. To use [Formspree](https://formspree.io) instead, paste its endpoint into `formEndpoint`.
-- **Text alerts (Quo):** `api/lead.js` texts every new lead from your Quo number to your team's phones, and can text the customer back instantly. Turn it on in Vercel → Settings → Environment Variables: `QUO_API_KEY`, `QUO_FROM` (+12142392420), `QUO_ALERT_TO` (team cell numbers, comma-separated) and optionally `QUO_AUTO_REPLY=true`, then redeploy. Needs Quo US carrier registration and prepaid API credits (about $0.01 per text).
+- **Lead alerts:** `api/lead.js` sends every new lead as a phone push notification (free [ntfy](https://ntfy.sh) app, set `NTFY_TOPIC` in Vercel and subscribe to it in the app) and, once Quo carrier registration is approved, as texts from your Quo number (`QUO_API_KEY`, `QUO_FROM`, `QUO_ALERT_TO`, optional `QUO_AUTO_REPLY=true`). Redeploy after changing Vercel variables.
+- **Lead page link:** `/quote` opens the quote form directly (same as `/contact`) and skips the intro animation. Use it in bios, ads and QR codes, e.g. `/quote?utm_source=instagram`.
 - **Reviews:** only real reviews should go in `reviews`. The section stays hidden while it is empty.
 - **Before/after Live Photos:** list your own photo pairs or short clips in `beforeAfter` in `site.js` (instructions are in the file). Visitors hover or press and hold to watch it wash clean.
 - **Commercial services:** edit `commercialService` in `site.js`.

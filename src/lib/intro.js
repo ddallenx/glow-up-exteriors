@@ -14,7 +14,8 @@ export const introWanted =
   window.matchMedia('(min-width: 1024px) and (hover: hover)').matches &&
   !weak() &&
   !safe(() => sessionStorage.getItem(KEY), false) &&
-  !window.location.search.includes('nointro')
+  !window.location.search.includes('nointro') &&
+  !/^\/(quote|contact)\/?$/.test(window.location.pathname) // lead links open straight on the form
 
 // Debug hook: add ?introdebug to the URL to hold the intro and drive it from the console.
 export const introDebug = typeof window !== 'undefined' && window.location.search.includes('introdebug')
