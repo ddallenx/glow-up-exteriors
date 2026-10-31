@@ -26,13 +26,16 @@ export const site = {
   },
 
   /**
-   * QUOTE FORM DELIVERY
-   * Option A (recommended): create a free form at https://formspree.io,
-   *   paste its endpoint here (e.g. 'https://formspree.io/f/abcdwxyz').
-   *   Quote requests are then emailed to you.
-   * Option B: leave '' — the form opens the visitor's email app with the
-   *   request pre-filled, addressed to the email above.
+   * QUOTE FORM DELIVERY — where new leads are emailed.
+   * leadEmail: the inbox that receives every quote request.
+   *   Uses FormSubmit (free, no account). The FIRST time someone submits the
+   *   form, FormSubmit emails this inbox an "Activate form" link. Click it once
+   *   and every request after that is delivered instantly.
+   *   To change the inbox, change leadEmail and activate again.
+   * formEndpoint: leave '' to use leadEmail above. Or paste a Formspree
+   *   endpoint (e.g. 'https://formspree.io/f/abcdwxyz') to use that instead.
    */
+  leadEmail: 'cmhumlicek007@gmail.com',
   formEndpoint: '',
 
   /**

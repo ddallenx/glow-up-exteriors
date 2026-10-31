@@ -9,7 +9,7 @@ Premium marketing site for Glow Up Exteriors — residential window washing & pr
 Open **`src/config/site.js`**. Change the phone, email, hours, service area, social links,
 services text, FAQs and team bios there. Commit and push — Vercel redeploys automatically.
 
-- **Quote form:** paste a free [Formspree](https://formspree.io) endpoint into `formEndpoint` so requests arrive in your inbox. Left blank, the form opens the visitor's email app with the request pre-filled.
+- **Quote form:** requests are emailed to `leadEmail` through [FormSubmit](https://formsubmit.co) (free, no account). The first submission sends that inbox an "Activate form" email; click the link once and every lead after that arrives instantly, with name, phone, service, window estimate and how they heard about you. To use [Formspree](https://formspree.io) instead, paste its endpoint into `formEndpoint`.
 - **Reviews:** only real reviews should go in `reviews`. The section stays hidden while it is empty.
 - **Before/after Live Photos:** list your own photo pairs or short clips in `beforeAfter` in `site.js` (instructions are in the file). Visitors hover or press and hold to watch it wash clean.
 - **Commercial services:** edit `commercialService` in `site.js`.
