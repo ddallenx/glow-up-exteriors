@@ -17,7 +17,6 @@ services text, FAQs and team bios there. Commit and push — Vercel redeploys au
 - **Before/after photos:** add pairs to `beforeAfter` (see the comments). Photos of the same window from the same angle work best.
 - **Hero video (optional):** drop an `.mp4` you own or have licensed into `public/video/` and set `heroVideo.src` in `site.js`. The homepage then plays it behind the headline instead of the 3D house.
 - **Team photos:** drop images in `public/team/` and set `photo: '/team/divine.jpg'`.
-- **Contact placeholders:** the phone number and email currently in the file are placeholders — replace them before launch.
 
 ## Run locally
 

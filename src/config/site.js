@@ -12,9 +12,9 @@ export const site = {
   shortName: 'Glow Up',
   tagline: 'Residential & commercial window washing and pressure washing',
 
-  // ── CONTACT DETAILS (placeholders — replace with your real info) ──
-  phone: '(719) 684-4456',
-  email: 'cmhumlicek007@gmail.com',
+  // ── CONTACT DETAILS ──
+  phone: '(214) 239-2420',
+  email: 'contact@glowupexteriors.co',
   serviceArea: 'Local residential service — ask us if we cover your street',
   hours: 'Mon–Sat · 8am – 8pm',
 
@@ -35,7 +35,7 @@ export const site = {
    * formEndpoint: leave '' to use leadEmail above. Or paste a Formspree
    *   endpoint (e.g. 'https://formspree.io/f/abcdwxyz') to use that instead.
    */
-  leadEmail: 'cmhumlicek007@gmail.com',
+  leadEmail: 'contact@glowupexteriors.co',
   formEndpoint: '',
 
   /**
