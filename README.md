@@ -9,7 +9,9 @@ Premium marketing site for Glow Up Exteriors — residential window washing & pr
 Open **`src/config/site.js`**. Change the phone, email, hours, service area, social links,
 services text, FAQs and team bios there. Commit and push — Vercel redeploys automatically.
 
-- **Quote form:** paste a free [Formspree](https://formspree.io) endpoint into `formEndpoint` so requests arrive in your inbox. Left blank, the form opens the visitor's email app with the request pre-filled.
+- **Quote form:** requests are emailed to `leadEmail` through [FormSubmit](https://formsubmit.co) (free, no account). The first submission sends that inbox an "Activate form" email; click the link once and every lead after that arrives instantly, with name, phone, service, window estimate and how they heard about you. To use [Formspree](https://formspree.io) instead, paste its endpoint into `formEndpoint`.
+- **Lead alerts:** `api/lead.js` sends every new lead as a phone push notification (free [ntfy](https://ntfy.sh) app, set `NTFY_TOPIC` in Vercel and subscribe to it in the app) and, once Quo carrier registration is approved, as texts from your Quo number (`QUO_API_KEY`, `QUO_FROM`, `QUO_ALERT_TO`, optional `QUO_AUTO_REPLY=true`). Redeploy after changing Vercel variables.
+- **Lead page link:** `/quote` opens the quote form directly (same as `/contact`) and skips the intro animation. Use it in bios, ads and QR codes, e.g. `/quote?utm_source=instagram`.
 - **Reviews:** only real reviews should go in `reviews`. The section stays hidden while it is empty.
 - **Before/after Live Photos:** list your own photo pairs or short clips in `beforeAfter` in `site.js` (instructions are in the file). Visitors hover or press and hold to watch it wash clean.
 - **Commercial services:** edit `commercialService` in `site.js`.
@@ -17,7 +19,6 @@ services text, FAQs and team bios there. Commit and push — Vercel redeploys au
 - **Before/after photos:** add pairs to `beforeAfter` (see the comments). Photos of the same window from the same angle work best.
 - **Hero video (optional):** drop an `.mp4` you own or have licensed into `public/video/` and set `heroVideo.src` in `site.js`. The homepage then plays it behind the headline instead of the 3D house.
 - **Team photos:** drop images in `public/team/` and set `photo: '/team/divine.jpg'`.
-- **Contact placeholders:** the phone number and email currently in the file are placeholders — replace them before launch.
 
 ## Run locally
 

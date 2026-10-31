@@ -6,6 +6,9 @@ import { gsap } from '../lib/gsap'
 import Button from './Button'
 
 const SERVICES = ['Window washing', 'Pressure washing', 'Both']
+const SOURCES = ['Instagram', 'TikTok', 'Facebook', 'Google search / Maps', 'Friend or neighbor', 'Saw us working nearby', 'Flyer or door hanger', 'Other']
+const endpoint = site.formEndpoint || (site.leadEmail ? `https://formsubmit.co/ajax/${site.leadEmail}` : '')
+const digitsOnly = (s) => s.replace(/[^\d+]/g, '')
 const field = 'w-full rounded-2xl border border-silver/20 bg-white/[0.04] px-5 py-4 text-[16px] text-white placeholder:text-silver-dim/70 transition-colors focus:border-royal-light focus:bg-white/[0.07] focus:outline-none'
 const label = 'mb-2 block text-[12px] font-bold uppercase tracking-[0.2em] text-silver'
 
@@ -19,12 +22,13 @@ export default function QuoteForm() {
   const [property, setProperty] = useState(params.get('type') === 'commercial' ? 'Commercial' : 'Residential')
   const commercial = property === 'Commercial'
   const form = useRef(null)
+  const summaryRef = useRef('')
 
   const validate = (d) => {
     const e = {}
     if (!d.name.trim()) e.name = 'Please tell us your name.'
-    if (!/^\S+@\S+\.\S+$/.test(d.email)) e.email = 'Enter a valid email address.'
-    if (d.phone.replace(/\D/g, '').length < 7) e.phone = 'Enter a phone number we can reach you on.'
+    if (d.email.trim() && !/^\S+@\S+\.\S+$/.test(d.email.trim())) e.email = 'Check your email address, or leave it blank.'
+    if (d.phone.replace(/\D/g, '').length < 10) e.phone = 'Enter a phone number we can call or text.'
     if (!d.address.trim()) e.address = 'Add your neighborhood or address so we can check coverage.'
     return e
   }
@@ -45,16 +49,45 @@ export default function QuoteForm() {
       form.current.querySelector('[aria-invalid="true"]')?.focus()
       return
     }
-    const summary = `New quote request — ${site.name}\n\nName: ${data.name}\nPhone: ${data.phone}\nEmail: ${data.email}\nAddress/area: ${data.address}\nProperty: ${data.property}${data.business ? ' — ' + data.business : ''}\nService: ${data.service}${data.windows && service !== 'Pressure washing' ? `\nWindows: ${data.windows} (${data.sides}) — estimate ${data.estimate}` : ''}\nProperty type: ${data.home}\nTiming: ${data.timing}\n\nDetails:\n${data.message || '(none)'}`
-    if (site.formEndpoint) {
+    const windowsLine = data.windows && service !== 'Pressure washing' ? `${data.windows} (${data.sides}) — estimate ${data.estimate}` : ''
+    const utm = ['utm_source', 'utm_medium', 'utm_campaign'].map((k) => params.get(k)).filter(Boolean).join(' / ')
+    const summary = `New quote request — ${site.name}\n\nName: ${data.name}\nPhone: ${data.phone}\nEmail: ${data.email || '(not given)'}\nAddress/area: ${data.address}\nProperty: ${data.property}${data.business ? ' — ' + data.business : ''}\nService: ${data.service}${windowsLine ? `\nWindows: ${windowsLine}` : ''}\nProperty type: ${data.home}\nTiming: ${data.timing}\nHeard about us: ${data.source || '(not given)'}\n\nDetails:\n${data.message || '(none)'}`
+    summaryRef.current = summary
+    if (endpoint) {
       setStatus('sending')
-      try {
-        const res = await fetch(site.formEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(data) })
-        if (!res.ok) throw new Error('bad')
-        setStatus('sent')
-      } catch {
-        setStatus('error')
+      // Readable labels so the lead email is easy to scan on a phone.
+      const lead = {
+        _subject: `New ${data.property.toLowerCase()} lead: ${data.name} — ${data.service}`,
+        _template: 'table',
+        _captcha: 'false',
+        Name: data.name,
+        Phone: data.phone,
+        email: data.email || undefined, // used as the reply-to address
+        'Address / area': data.address,
+        Property: data.property + (data.business ? ` — ${data.business}` : ''),
+        Service: data.service,
+        Windows: windowsLine || undefined,
+        [commercial ? 'Property type' : 'Home type']: data.home,
+        Timing: data.timing,
+        'Heard about us': data.source || undefined,
+        Campaign: utm || undefined,
+        Details: data.message || undefined,
+        'Sent from': window.location.href,
       }
+      const sendEmail = async () => {
+        const res = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(lead) })
+        const body = await res.json().catch(() => ({}))
+        if (!res.ok || body.success === false || body.success === 'false') throw new Error(body.message || 'bad')
+      }
+      // Text alert through Quo (api/lead.js). Does nothing until Quo is set up in Vercel.
+      const sendText = async () => {
+        const res = await fetch('/api/lead', { method: 'POST', keepalive: true, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...data, windows: windowsLine, company: undefined }) })
+        const body = await res.json().catch(() => ({}))
+        if (!res.ok || !body.ok) throw new Error('not sent')
+      }
+      // The lead counts as delivered if either the email or the text went through.
+      const [email, text] = await Promise.allSettled([sendEmail(), sendText()])
+      setStatus(email.status === 'fulfilled' || text.status === 'fulfilled' ? 'sent' : 'error')
     } else {
       window.location.href = `mailto:${site.email}?subject=${encodeURIComponent('Free quote request — ' + data.service)}&body=${encodeURIComponent(summary)}`
       setStatus('mailto')
@@ -71,9 +104,10 @@ export default function QuoteForm() {
         <h3 className="font-display text-4xl font-extrabold">{status === 'sent' ? 'Request received.' : 'Almost there.'}</h3>
         <p className="mt-4 max-w-md text-silver-dim">
           {status === 'sent'
-            ? 'Thank you! We will review your details and get back to you with a free quote shortly.'
+            ? 'Thank you! We will call or text you shortly with your free quote. Need us sooner? Give us a call.'
             : 'Your email app should have opened with your request filled in. Just press send and we will get back to you with a free quote. If nothing opened, email or call us directly.'}
         </p>
+        {status === 'sent' && <Button href={`tel:${digitsOnly(site.phone)}`} variant="ghost" className="mt-8" arrow={false}>Call {site.phone}</Button>}
         {status === 'mailto' && <Button href={`mailto:${site.email}`} variant="ghost" className="mt-8" arrow={false}>{site.email}</Button>}
       </div>
     )
@@ -113,7 +147,7 @@ export default function QuoteForm() {
         {commercial && <div className="md:col-span-2"><label className={label} htmlFor="business">Business or property name</label><input id="business" name="business" autoComplete="organization" className={field} placeholder="Acme Dental, Maple Plaza HOA…" /></div>}
         <div><label className={label} htmlFor="name">Full name</label><input id="name" name="name" autoComplete="name" className={field} placeholder="Jordan Smith" {...a11y('name')} />{err('name')}</div>
         <div><label className={label} htmlFor="phone">Phone</label><input id="phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" className={field} placeholder="(555) 123-4567" {...a11y('phone')} />{err('phone')}</div>
-        <div><label className={label} htmlFor="email">Email</label><input id="email" name="email" type="email" inputMode="email" autoComplete="email" className={field} placeholder="you@example.com" {...a11y('email')} />{err('email')}</div>
+        <div><label className={label} htmlFor="email">Email <span className="font-medium normal-case tracking-normal text-silver-dim">(optional)</span></label><input id="email" name="email" type="email" inputMode="email" autoComplete="email" className={field} placeholder="you@example.com" {...a11y('email')} />{err('email')}</div>
         <div><label className={label} htmlFor="address">{commercial ? 'Property address' : 'Address or neighborhood'}</label><input id="address" name="address" autoComplete="street-address" className={field} placeholder="123 Maple Street" {...a11y('address')} />{err('address')}</div>
         <div>
           <label className={label} htmlFor="home">{commercial ? 'Property type' : 'Home type'}</label>
@@ -145,16 +179,30 @@ export default function QuoteForm() {
           </>
         )}
         <div className="md:col-span-2">
+          <label className={label} htmlFor="source">How did you hear about us? <span className="font-medium normal-case tracking-normal text-silver-dim">(optional)</span></label>
+          <select id="source" name="source" className={`${field} appearance-none`} defaultValue="">
+            <option value="" className="bg-navy">Choose one</option>
+            {SOURCES.map((o) => <option key={o} className="bg-navy">{o}</option>)}
+          </select>
+        </div>
+        <div className="md:col-span-2">
           <label className={label} htmlFor="message">Anything we should know? <span className="font-medium normal-case tracking-normal text-silver-dim">(optional)</span></label>
           <textarea id="message" name="message" rows={4} className={`${field} resize-none`} placeholder="Number of windows, problem areas, access notes, hours…" />
         </div>
       </div>
 
       <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <p className="max-w-xs text-sm text-silver-dim">Free, no-obligation quote. We only use your details to reply to you.</p>
+        <p className="max-w-xs text-sm text-silver-dim">Free, no-obligation quote. By sending, you agree we may call or text you about your quote. Msg &amp; data rates may apply; reply STOP to opt out.</p>
         <Button type="submit" disabled={status === 'sending'} arrow={status !== 'sending'}>{status === 'sending' ? 'Sending…' : 'Request free quote'}</Button>
       </div>
-      {status === 'error' && <p role="alert" className="mt-5 rounded-2xl bg-[#ff9aa8]/10 p-4 text-sm font-semibold text-[#ff9aa8]">Something went wrong sending your request. Please try again, or call {site.phone}.</p>}
+      {status === 'error' && (
+        <div role="alert" className="mt-5 rounded-2xl bg-[#ff9aa8]/10 p-4 text-sm font-semibold text-[#ff9aa8]">
+          Something went wrong sending your request. Please try again, or reach us directly:{' '}
+          <a className="underline underline-offset-4 hover:text-white" href={`tel:${digitsOnly(site.phone)}`}>call {site.phone}</a>
+          {' '}or{' '}
+          <a className="underline underline-offset-4 hover:text-white" href={`mailto:${site.email}?subject=${encodeURIComponent('Free quote request')}&body=${encodeURIComponent(summaryRef.current)}`}>email your request</a>.
+        </div>
+      )}
     </form>
   )
 }
