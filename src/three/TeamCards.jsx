@@ -38,7 +38,7 @@ function face() {
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t
 }
 
-/** Transparent overlay: name, role, focus, age badge, and a dark gradient so text reads over the photo. */
+/** Transparent overlay: name, role, focus, and a dark gradient so text reads over the photo. */
 function label(p) {
   const c = document.createElement('canvas'); c.width = CW; c.height = CH
   const g = c.getContext('2d')
@@ -46,10 +46,6 @@ function label(p) {
   fade.addColorStop(0, 'rgba(0,0,0,0)'); fade.addColorStop(0.55, 'rgba(0,0,0,.78)'); fade.addColorStop(1, 'rgba(0,0,0,.95)')
   g.fillStyle = fade; g.fillRect(14, CH * 0.58, CW - 28, CH * 0.42 - 14)
   g.fillStyle = '#9cc8ff'; g.font = '700 22px Manrope, sans-serif'; g.letterSpacing = '8px'; g.fillText('GLOW UP EXTERIORS', 56, 84); g.letterSpacing = '0px'
-  g.strokeStyle = '#6cb2ff'; g.lineWidth = 4; g.beginPath(); g.arc(CW - 118, 138, 62, 0, 7); g.stroke()
-  g.fillStyle = 'rgba(0,0,0,.55)'; g.beginPath(); g.arc(CW - 118, 138, 60, 0, 7); g.fill()
-  g.fillStyle = '#fff'; g.textAlign = 'center'; g.font = '800 60px Manrope, sans-serif'; g.fillText(String(p.age), CW - 118, 158)
-  g.font = '700 15px Manrope, sans-serif'; g.fillStyle = '#9cc8ff'; g.letterSpacing = '4px'; g.fillText('YEARS OLD', CW - 116, 186); g.letterSpacing = '0px'
   g.textAlign = 'left'
   g.fillStyle = '#4da3ff'; g.font = '700 28px Manrope, sans-serif'; g.letterSpacing = '9px'; g.fillText(p.role.toUpperCase(), 56, 800); g.letterSpacing = '0px'
   g.fillStyle = '#fff'; g.font = '800 140px Manrope, sans-serif'; g.letterSpacing = '-6px'; g.fillText(p.name, 50, 925); g.letterSpacing = '0px'
@@ -60,7 +56,7 @@ function label(p) {
 function back(p) {
   const c = document.createElement('canvas'); c.width = CW; c.height = CH
   const g = c.getContext('2d'); bg(g)
-  g.fillStyle = '#4da3ff'; g.font = '700 26px Manrope, sans-serif'; g.letterSpacing = '8px'; g.fillText(`${p.role.toUpperCase()}  ·  AGE ${p.age}`, 56, 110); g.letterSpacing = '0px'
+  g.fillStyle = '#4da3ff'; g.font = '700 26px Manrope, sans-serif'; g.letterSpacing = '8px'; g.fillText(p.role.toUpperCase(), 56, 110); g.letterSpacing = '0px'
   g.fillStyle = '#fff'; g.font = '800 96px Manrope, sans-serif'; g.letterSpacing = '-4px'; g.fillText(p.name, 52, 230); g.letterSpacing = '0px'
   g.fillStyle = '#dbe6fa'; g.font = '500 38px Manrope, sans-serif'; wrap(g, p.bio, 56, 330, CW - 112, 58)
   g.fillStyle = '#6cb2ff'; g.font = 'italic 46px "Instrument Serif", Georgia, serif'; g.fillText('Glow Up Exteriors — co-founder', 56, 940)

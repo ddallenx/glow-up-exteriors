@@ -143,7 +143,6 @@ export const team = [
   {
     name: 'Divine',
     crop: 'bust',
-    age: 20,
     role: 'Co-Founder',
     focus: 'Community, service, meaning',
     photo: '/team/divine.webp',
@@ -152,7 +151,6 @@ export const team = [
   {
     name: 'Jeremy',
     crop: 'bust',
-    age: 21,
     role: 'Co-Founder',
     focus: 'Friendlier homes, fuller potential',
     photo: '/team/jeremy.webp',
@@ -161,7 +159,6 @@ export const team = [
   {
     name: 'Colin',
     crop: 'bust',
-    age: 21,
     role: 'Co-Founder',
     focus: 'Prestige, quality, respect',
     photo: '/team/colin.webp',

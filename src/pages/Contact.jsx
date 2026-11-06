@@ -40,7 +40,7 @@ export default function Contact() {
               <div className="mt-8 flex flex-wrap gap-3">
                 {team.map((p) => (
                   <span key={p.name} className="glass inline-flex items-center gap-3 rounded-full py-1.5 pl-1.5 pr-4 text-sm font-bold">
-                    <Avatar person={p} className="h-11 w-11" />{p.name}<span className="font-medium text-silver">· {p.age}</span>
+                    <Avatar person={p} className="h-11 w-11" />{p.name}<span className="font-medium text-silver">· {p.role}</span>
                   </span>
                 ))}
               </div>
