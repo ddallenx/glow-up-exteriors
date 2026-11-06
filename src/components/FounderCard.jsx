@@ -12,7 +12,7 @@ export default function FounderCard({ p, compact = false, className = '' }) {
       <div className="relative z-10">
         <div className={`relative -mt-14 ${h} [transform:translateZ(60px)]`}>
           {p.photo ? (
-            <img src={p.photo} alt={`${p.name}, ${p.role}, age ${p.age}`} loading="lazy" draggable="false"
+            <img src={p.photo} alt={`${p.name}, ${p.role}`} loading="lazy" draggable="false"
               className={`absolute bottom-0 left-1/2 ${p.crop === 'full' ? 'h-[118%]' : 'h-full'} max-w-full -translate-x-1/2 object-contain object-bottom drop-shadow-[0_20px_40px_rgba(0,0,0,.6)] ${p.crop === 'bust' ? '[mask-image:linear-gradient(to_bottom,#000_84%,transparent)]' : ''}`} />
           ) : (
             <span aria-hidden="true" className="serif-accent absolute inset-0 flex items-center justify-center text-[10rem] text-silver-grad">{p.name[0]}</span>

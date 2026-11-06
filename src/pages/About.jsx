@@ -31,7 +31,7 @@ export default function About() {
             {team.map((p) => (
               <span key={p.name} className="glass inline-flex items-center gap-3 rounded-full py-1.5 pl-1.5 pr-5 text-sm font-bold">
                 <Avatar person={p} className="h-11 w-11" />
-                {p.name}<span className="font-medium text-silver">· {p.age} · {p.role}</span>
+                {p.name}<span className="font-medium text-silver">· {p.role}</span>
               </span>
             ))}
           </Reveal>
@@ -74,7 +74,7 @@ export default function About() {
                 <p className="mt-2 text-center text-xs font-bold uppercase tracking-[0.3em] text-silver-dim">Hover to tilt · Click a card to flip</p>
               </Reveal>
               <ul className="sr-only">
-                {team.map((p) => <li key={p.name}>{p.name}, age {p.age}, {p.role}. {p.focus}. {p.bio}</li>)}
+                {team.map((p) => <li key={p.name}>{p.name}, {p.role}. {p.focus}. {p.bio}</li>)}
               </ul>
             </>
           ) : flat}
